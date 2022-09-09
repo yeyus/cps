@@ -1,25 +1,26 @@
-import React from 'react';
-import logo from './logo.svg';
+import * as React from 'react';
+import { ConnectionProvider } from './modules/connection-manager/context';
 import './App.css';
+import { ConnectionWizard } from './modules/connection-manager/serial/connection-wizard';
+import { RadioPicker } from './modules/radio-picker/radio-picker';
+import { RadioDefinition } from './configs/radio-config';
+import { Transport } from './modules/connection-manager/types';
+import { RadioDownloader } from './modules/radio-downloader/radio-downloader';
 
 function App() {
+  const [radio, setRadio] = React.useState<RadioDefinition>();
+  const handleRadioSelect = (selected: RadioDefinition) => setRadio(selected);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <ConnectionProvider>
+      <div className="App">
+        <section>
+          <RadioPicker selected={radio} onSelect={handleRadioSelect} />
+          {radio && radio.transport === Transport.SERIAL && <ConnectionWizard radio={radio} />}
+          <RadioDownloader />
+        </section>
+      </div>
+    </ConnectionProvider>
   );
 }
 
