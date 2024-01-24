@@ -1,3 +1,4 @@
+import retry from "async-retry";
 import { Transport } from "../../modules/connection-manager/types";
 import { TransferEmitter } from "../../utils/transfer-emitter";
 import { RadioDefinition, SerialRadio } from "../radio-config";
@@ -19,10 +20,10 @@ export const xor = (data: Uint8Array) => {
 function crc16xmodem(data: Uint8Array, crc = 0): number {
   const poly = 0x1021;
 
-  for (let i = 0; i < data.length; i++) {
+  for (let i = 0; i < data.length; i += 1) {
     crc ^= data[i] << 8;
 
-    for (let j = 0; j < 8; j++) {
+    for (let j = 0; j < 8; j += 1) {
       if (crc & 0x8000) {
         crc = (crc << 1) ^ poly;
       } else {
@@ -36,6 +37,9 @@ function crc16xmodem(data: Uint8Array, crc = 0): number {
   return crc;
 }
 
+const EEPROM_SIZE = 0x2000;
+const EEPROM_BLOCK_SIZE = 0x80;
+
 const COMMAND_PREFIX = new Uint8Array([0xab, 0xcd]);
 const COMMAND_SUFFIX = new Uint8Array([0xdc, 0xba]);
 
@@ -47,7 +51,7 @@ const COMMAND_HELLO = new Uint8Array([0x14, 0x05, 0x04, 0x00, 0x6a, 0x39, 0x57, 
 /* COMMAND: READ MEM
   1b 05 08 00 [o1 o2] [le] 00 6a 39 57 64
 */
-const COMMAND_READMEM = (offset: number, length: number) => {
+const COMMAND_READMEM = (offset: number, length: number = 0x80) => {
   const cmd = new Uint8Array(12);
   cmd.set([0x1b, 0x05, 0x08, 0x00], 0);
   cmd.set([offset & 0xff, (offset >> 8) & 0xff], 4);
@@ -56,6 +60,11 @@ const COMMAND_READMEM = (offset: number, length: number) => {
 
   return cmd;
 };
+
+/* COMMAND: RESET
+  dd 05 00 00
+*/
+const COMMAND_RESET = new Uint8Array([0xdd, 0x05, 0x00, 0x00]);
 
 enum RadioMode {
   DFU,
@@ -130,7 +139,7 @@ export class QuanshengUVK5 extends SerialRadio {
     const asciiDecoder = new TextDecoder();
 
     // extract radio firmware serial
-    radioInfo.firmwareVersion = asciiDecoder.decode(reply.slice(4, 14));
+    radioInfo.firmwareVersion = asciiDecoder.decode(reply.slice(4, 16));
     return radioInfo;
   }
 
@@ -145,9 +154,29 @@ export class QuanshengUVK5 extends SerialRadio {
     return out;
   }
 
-  downloadCodeplug(emitter?: TransferEmitter | undefined): void {
-    throw new Error("Method not implemented.");
+  async resetRadio(): Promise<void> {
+    log(`resetRadio: sending command`);
+    await this.sendCommand(COMMAND_RESET);
   }
+
+  async downloadCodeplug(emitter?: TransferEmitter | undefined): Promise<Uint8Array> {
+    const buffer = new Uint8Array(EEPROM_SIZE);
+    emitter && emitter.setTotal(EEPROM_SIZE / EEPROM_BLOCK_SIZE);
+
+    // @ts-ignore
+    const radioInfo = await retry(this.sayHello, { retries: 5, maxTimeout: 1500 });
+
+    log(`downloadCodeplug: firmware version: ${radioInfo.firmwareVersion}`);
+
+    for (let address = 0; address < EEPROM_SIZE; address += EEPROM_BLOCK_SIZE) {
+      const chunk = await this.readMemory(address, EEPROM_BLOCK_SIZE);
+      buffer.set(chunk, address);
+      emitter?.update((v) => v + 1);
+    }
+
+    return buffer;
+  }
+
   uploadCodeplug(emitter?: TransferEmitter | undefined): void {
     throw new Error("Method not implemented.");
   }

@@ -9,6 +9,9 @@
     "rules": {
         "prettier/prettier": [
             "error"
-        ]
+        ],
+        "getter-return": "off",
+        "no-bitwise": "off",
+        "no-undef": "off"
     },
 }
