@@ -3,7 +3,7 @@ import { TransferEmitter } from "../../utils/transfer-emitter";
 import { useConnection } from "../connection-manager/context";
 import { ConnectionStatus } from "../connection-manager/types";
 
-export function RadioDownloader() {
+export default function RadioDownloader() {
   const [total, setTotal] = React.useState(0);
   const [current, setCurrent] = React.useState(0);
   const emitterRef = React.useRef<TransferEmitter | undefined>(undefined);
@@ -32,7 +32,7 @@ export function RadioDownloader() {
 
   return (
     <>
-      <button onClick={handleDownload} disabled={!isConnected}>
+      <button type="button" onClick={handleDownload} disabled={!isConnected}>
         Download Codeplug
       </button>
       <span>

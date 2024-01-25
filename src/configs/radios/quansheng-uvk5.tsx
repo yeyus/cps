@@ -1,11 +1,14 @@
 import retry from "async-retry";
 import { Transport } from "../../modules/connection-manager/types";
 import { TransferEmitter } from "../../utils/transfer-emitter";
-import { RadioDefinition, SerialRadio } from "../radio-config";
+import { RadioDefinition } from "../radio-config";
 
 import image from "./images/quanshenk-uvk5-photo.png";
+import { SerialRadio } from "../../modules/radio-types/transports/serial/serial";
+import getLogger from "../../utils/logger";
+import SerialConnection from "../../modules/radio-types/transports/serial/serial-connection";
 
-const log = (...args: any[]) => console.log("[QuanshengUVK5]", ...args);
+const logger = getLogger("QuanshengUVK5");
 
 const XOR_KEY = new Uint8Array([
   0x16, 0x6c, 0x14, 0xe6, 0x2e, 0x91, 0x0d, 0x40, 0x21, 0x35, 0xd5, 0x40, 0x13, 0x03, 0xe9, 0x80,
@@ -13,13 +16,17 @@ const XOR_KEY = new Uint8Array([
 
 export const xor = (data: Uint8Array) => {
   const dataCopy = new Uint8Array(data);
-  dataCopy.forEach((_, index, array) => (array[index] ^= XOR_KEY[index % XOR_KEY.length]));
+  dataCopy.forEach((_, index, array) => {
+    // eslint-disable-next-line no-param-reassign
+    array[index] ^= XOR_KEY[index % XOR_KEY.length];
+  });
   return dataCopy;
 };
 
-function crc16xmodem(data: Uint8Array, crc = 0): number {
+function crc16xmodem(data: Uint8Array, initialCrc = 0): number {
   const poly = 0x1021;
 
+  let crc = initialCrc;
   for (let i = 0; i < data.length; i += 1) {
     crc ^= data[i] << 8;
 
@@ -77,24 +84,28 @@ interface RadioInfo {
 }
 
 export class QuanshengUVK5 extends SerialRadio {
+  // eslint-disable-next-line no-use-before-define
   definition = QuanshengUVK5Definition;
 
   async sendCommand(data: Uint8Array): Promise<void> {
-    log(`sendCommand: command with length ${data.length}`, data);
+    logger.info(`sendCommand: command with length ${data.length}`);
+    logger.hex(data);
 
     const calculatedCrc = crc16xmodem(data);
     const dataWithCrc = new Uint8Array(data.length + 2);
     dataWithCrc.set(data, 0);
     dataWithCrc.set([calculatedCrc & 0xff, (calculatedCrc >> 8) & 0xff], data.length);
 
-    const command = new Uint8Array(2 + dataWithCrc.length + 2);
+    const command = new Uint8Array(2 + 2 + dataWithCrc.length + 2);
     command.set(COMMAND_PREFIX, 0);
     command.set([data.length & 0xff, (data.length >> 8) & 0xff], 2);
     command.set(xor(dataWithCrc), 4);
     command.set(COMMAND_SUFFIX, 4 + dataWithCrc.length);
 
-    log(`sendCommand: encoded command with length ${command.length}`, command);
-    return await this.connection.write(command);
+    logger.info(`sendCommand: encoded command with length ${command.length}`);
+    logger.hex(command);
+
+    return this.connection.write(command);
   }
 
   async receiveReply(): Promise<Uint8Array> {
@@ -111,28 +122,30 @@ export class QuanshengUVK5 extends SerialRadio {
     if (footer.length !== 4 || footer.at(2) !== 0xdc || footer.at(3) !== 0xba)
       throw new Error(`Footer is not 0xDCBA, got 0x${footer.at(2)?.toString(16)}${footer.at(3)?.toString(16)}`);
 
-    log(`receiveReply: encoded reply with length ${data.length}`, data);
+    logger.info(`receiveReply: encoded reply with length ${data.length}`);
+    logger.hex(data);
 
     const decodedData = xor(data);
 
-    log(`receiveReply: reply with length ${decodedData.length}`, decodedData);
+    logger.info(`receiveReply: reply with length ${decodedData.length}`);
+    logger.hex(decodedData);
 
     return decodedData;
   }
 
   async sayHello(): Promise<RadioInfo> {
-    log(`sayHello: sending hello packet`);
+    logger.info(`sayHello: sending hello packet`);
     await this.sendCommand(COMMAND_HELLO);
 
     const reply = await this.receiveReply();
 
-    let radioInfo: RadioInfo = {
+    const radioInfo: RadioInfo = {
       mode: RadioMode.DATA,
       firmwareVersion: "",
     };
 
     if (reply.at(0) === 0x18 && reply.at(1) === 0x05) {
-      log(`sayHello: radio is in firmware flash mode`);
+      logger.warn(`sayHello: radio is in firmware flash mode`);
       radioInfo.mode = RadioMode.DFU;
     }
 
@@ -140,53 +153,60 @@ export class QuanshengUVK5 extends SerialRadio {
 
     // extract radio firmware serial
     radioInfo.firmwareVersion = asciiDecoder.decode(reply.slice(4, 16));
+    logger.info(`sayHello: hello done for radio with firmware ${radioInfo.firmwareVersion}`);
     return radioInfo;
   }
 
   async readMemory(offset: number, length: number): Promise<Uint8Array> {
-    log(`readMemory: sending offset=0x${offset.toString(16)} length=0x${length.toString(16)}`);
+    logger.info(`readMemory: sending offset=0x${offset.toString(16)} length=0x${length.toString(16)}`);
     await this.sendCommand(COMMAND_READMEM(offset, length));
 
-    log(`readMemory: awaiting reply`);
+    logger.info(`readMemory: awaiting reply`);
     const response = await this.receiveReply();
     const out = response.slice(8, response.length);
-    log(`readMemory: received data`, out);
+    logger.info(`readMemory: received data with length=${out.length}`);
+    logger.hex(out);
     return out;
   }
 
   async resetRadio(): Promise<void> {
-    log(`resetRadio: sending command`);
+    logger.log(`resetRadio: sending command`);
     await this.sendCommand(COMMAND_RESET);
   }
 
   async downloadCodeplug(emitter?: TransferEmitter | undefined): Promise<Uint8Array> {
     const buffer = new Uint8Array(EEPROM_SIZE);
-    emitter && emitter.setTotal(EEPROM_SIZE / EEPROM_BLOCK_SIZE);
+    emitter?.setTotal(EEPROM_SIZE / EEPROM_BLOCK_SIZE);
 
-    // @ts-ignore
-    const radioInfo = await retry(this.sayHello, { retries: 5, maxTimeout: 1500 });
+    const bindedSayHello = this.sayHello.bind(this);
+    // @ts-expect-error async-retry doesnt properly import retry module options
+    const radioInfo = await retry(bindedSayHello, { retries: 5, maxTimeout: 1500 });
 
-    log(`downloadCodeplug: firmware version: ${radioInfo.firmwareVersion}`);
+    logger.log(`downloadCodeplug: firmware version: ${radioInfo.firmwareVersion}`);
 
     for (let address = 0; address < EEPROM_SIZE; address += EEPROM_BLOCK_SIZE) {
+      // eslint-disable-next-line no-await-in-loop
       const chunk = await this.readMemory(address, EEPROM_BLOCK_SIZE);
       buffer.set(chunk, address);
       emitter?.update((v) => v + 1);
     }
 
+    emitter?.done();
     return buffer;
   }
 
-  uploadCodeplug(emitter?: TransferEmitter | undefined): void {
+  uploadCodeplug(): void {
     throw new Error("Method not implemented.");
   }
 }
 
-export const QuanshengUVK5Definition: RadioDefinition = {
+export const QuanshengUVK5Definition: RadioDefinition<QuanshengUVK5> = {
   identifiers: [["Quansheng", "UV-K5", 1]],
   transport: Transport.SERIAL,
   image,
-  factory: QuanshengUVK5,
+  createRadio(connection: SerialConnection) {
+    return new QuanshengUVK5(connection);
+  },
   serialOptions: {
     baudRate: 38400,
     dataBits: 8,
