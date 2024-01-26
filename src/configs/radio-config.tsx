@@ -1,36 +1,15 @@
-import { SerialConnection } from "../modules/connection-manager/serial/serial-connection";
-import { Transport } from "../modules/connection-manager/types";
-import { TransferEmitter } from "../utils/transfer-emitter";
+import { BaseRadioInterface, Transport } from "../modules/radio-types/base";
 
 export type BrandModelRevision = [string, string, number];
 
-export interface RadioDefinition {
-    identifiers: BrandModelRevision[];
-    transport: Transport;
-    image?: string;
+export interface RadioDefinition<T extends BaseRadioInterface> {
+  identifiers: BrandModelRevision[];
+  transport: Transport;
+  image?: string;
 
-    get factory(): any;
+  // get factory(): T;
+  createRadio(...args: unknown[]): T;
 
-    // for serial radios
-    serialOptions?: SerialOptions;
-}
-
-export interface BaseRadio {
-    transport: Transport;
-
-    downloadCodeplug(emitter?: TransferEmitter) : void;
-    uploadCodeplug(emitter?: TransferEmitter) : void;
-};
-
-export abstract class SerialRadio implements BaseRadio {
-    transport = Transport.SERIAL;
-    connection: SerialConnection;
-
-    constructor(connection: SerialConnection) {
-        this.connection = connection;
-    }
-
-    abstract downloadCodeplug(emitter?: TransferEmitter): void;
-    
-    abstract uploadCodeplug(emitter?: TransferEmitter): void;
+  // for serial radios
+  serialOptions?: SerialOptions;
 }
