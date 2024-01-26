@@ -36,6 +36,8 @@ export default class SerialConnection extends events.EventEmitter implements Ser
 
   reader: ReadableStreamDefaultReader<Uint8Array> | null = null;
 
+  nextReadJobId: number = 0;
+
   buffer: Uint8Array = new Uint8Array();
 
   constructor(index: number, port: SerialPort, options: SerialOptions) {
@@ -69,7 +71,8 @@ export default class SerialConnection extends events.EventEmitter implements Ser
   }
 
   async write(data: Uint8Array): Promise<void> {
-    logger.info("writing data:", data);
+    logger.info(`writing data with length=${data.length}`);
+    logger.hex(data);
     // todo remove this clear
     this.buffer = new Uint8Array();
     if (this.port.writable) {
@@ -81,22 +84,36 @@ export default class SerialConnection extends events.EventEmitter implements Ser
   }
 
   async read(length?: number, timeout?: number): Promise<Uint8Array> {
+    const jobId = this.nextReadJobId;
+    this.nextReadJobId += 1;
+    logger.debug(`[Read${jobId}] consumer wants to read ${length} bytes in at most ${timeout}ms`);
+    return this.readInternal(jobId, length, timeout);
+  }
+
+  private async readInternal(
+    jobId: number,
+    length?: number,
+    timeout?: number,
+    elapsed: number = 0,
+  ): Promise<Uint8Array> {
     const haveEnoughBytes = this.buffer.length >= (length ?? 1);
 
     if (haveEnoughBytes) {
+      logger.debug(`[Read${jobId}] I have ${this.buffer.length} bytes ready, serving ${length} bytes`);
       return Promise.resolve(this.readBytesFromBuffer(length));
     }
 
     if (!haveEnoughBytes && timeout === undefined) {
+      logger.warn(`[Read${jobId}] not enough data`);
       return Promise.reject(new Error("not enough data"));
     }
 
     return new Promise((resolve, reject) => {
       function poll(cls: SerialConnection, elapsedTime: number) {
         return () => {
-          logger.debug(`polling for data -> timePast: ${elapsedTime} of ${timeout}`);
+          logger.debug(`[Read${jobId}] polling for data -> timePast: ${elapsedTime} of ${timeout}`);
 
-          cls.read(length).then(
+          cls.readInternal(jobId, length, timeout, elapsed + POLL_INTERVAL).then(
             (result: Uint8Array) => {
               resolve(result);
             },
@@ -104,15 +121,13 @@ export default class SerialConnection extends events.EventEmitter implements Ser
           );
 
           if (elapsedTime >= (timeout ?? 1000)) {
+            logger.warn(`[Read${jobId}] timeout!`);
             reject(new Error("timeout"));
-            return;
           }
-
-          setTimeout(poll(cls, elapsedTime + POLL_INTERVAL), POLL_INTERVAL);
         };
       }
 
-      setTimeout(poll(this, 0), POLL_INTERVAL);
+      setTimeout(poll(this, elapsed), POLL_INTERVAL);
     });
   }
 
@@ -121,7 +136,7 @@ export default class SerialConnection extends events.EventEmitter implements Ser
     const result = this.buffer.slice(0, length);
 
     if (length <= this.buffer.length) {
-      this.buffer = this.buffer.slice(length, this.buffer.length);
+      this.buffer = new Uint8Array(this.buffer.slice(length, this.buffer.length));
     } else {
       this.buffer = new Uint8Array();
     }
@@ -138,18 +153,22 @@ export default class SerialConnection extends events.EventEmitter implements Ser
         while (true) {
           logger.debug("pre blocking read");
           const { value, done } = await this.reader.read();
-          logger.debug("post blocking read", value, done);
+
+          logger.debug(`post blocking read with length=${value?.length} done=${done}`, done);
+          if (value != null) logger.hex(value);
+
           if (done) {
             // |reader| has been canceled.
             logger.debug("reader has been canceled");
             break;
           }
-          logger.debug(`incoming ${value.length}`);
+          logger.debug(`incoming length=${value.length}`);
           this.buffer = concatenate(this.buffer, value);
         }
       } catch (error) {
         logger.error("error while reading from serial port: ", error);
       } finally {
+        logger.debug("releasing lock");
         this.reader.releaseLock();
       }
     }
