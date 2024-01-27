@@ -22,6 +22,10 @@ export class RaddiodityGD88 extends SerialRadio {
   // eslint-disable-next-line no-use-before-define
   definition = RaddiodityGD88Definition;
 
+  get name(): string {
+    return "Raddiodity GD-88";
+  }
+
   async getRadioInformation(): Promise<Uint8Array> {
     logger.info(`getRadioInformation`);
     await this.connection.write(Uint8Array.from(COMMAND_READ_FLASH));

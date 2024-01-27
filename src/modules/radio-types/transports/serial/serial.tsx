@@ -20,6 +20,8 @@ export abstract class SerialRadio implements BaseRadioInterface {
 
   connection: SerialConnectionInterface;
 
+  abstract get name(): string;
+
   constructor(connection: SerialConnectionInterface) {
     this.connection = connection;
   }

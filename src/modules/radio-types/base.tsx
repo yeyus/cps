@@ -9,6 +9,8 @@ export enum Transport {
 export interface BaseRadioInterface {
   transport: Transport;
 
+  get name(): string;
+
   downloadCodeplug(emitter?: TransferEmitter): void;
   uploadCodeplug(emitter?: TransferEmitter): void;
 }

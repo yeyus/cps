@@ -7,6 +7,7 @@ import { RadioDefinition } from "./configs/radio-config";
 import { Transport } from "./modules/connection-manager/types";
 import RadioDownloader from "./modules/radio-downloader/radio-downloader";
 import { RadioTransports } from "./modules/radio-types/transports";
+import ConnectionStatusComponent from "./modules/connection-manager/connection-status";
 
 declare global {
   interface Window {
@@ -24,6 +25,7 @@ function App() {
   return (
     <ConnectionProvider>
       <div className="App">
+        <ConnectionStatusComponent />
         <section>
           <RadioPicker selected={radio} onSelect={handleRadioSelect} />
           {radio && radio.transport === Transport.SERIAL && <ConnectionWizard radioDefinition={radio} />}

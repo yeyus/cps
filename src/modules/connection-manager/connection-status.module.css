@@ -1,0 +1,49 @@
+@-webkit-keyframes rumble {
+    0% {-webkit-transform: rotate(0deg);}
+    25% {-webkit-transform: translate(2px, 0px) rotate(-3deg);}
+    50% {-webkit-transform: translate(0px, -2px) rotate(0deg);}
+    75% {-webkit-transform: translate(-2px, 0px) rotate(3deg);}
+    100% {-webkit-transform: translate(0px, 2px) rotate(0deg);} 
+}
+
+.wrapper {
+    display: flex;
+    flex-direction: row;
+}
+
+.portIcon {
+    height: 28px;
+    line-height: 28px;
+    margin-top: -2px;
+}
+
+.connected {
+    color: green;
+}
+
+.disconnected {
+    color: red;
+}
+
+.alertIcon {
+    height: 26px;
+    margin-top: -2px;
+    margin-left: 8px;
+    margin-right: 8px;
+}
+
+.alert {
+    color: orange;
+}
+
+.rumble {
+    -webkit-animation: rumble .0625s infinite linear;
+    animation: rumble .0625s infinite linear;
+}
+
+.disconnectButton {
+    margin-left: 8px;
+    margin-right: 8px;
+    padding: 3px;
+    font-size: 12px;
+}

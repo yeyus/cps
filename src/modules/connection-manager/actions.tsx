@@ -4,7 +4,7 @@ import { ConnectionAction, ConnectionState, ConnectionStatus, Transport } from "
 
 const logger = getLogger("ConnectSerialRadioAction");
 
-export const ConnectSerialRadioAction = (dispatch: React.Dispatch<ConnectionAction>, radio: SerialRadio): void => {
+export const connectSerialRadioAction = (dispatch: React.Dispatch<ConnectionAction>, radio: SerialRadio): void => {
   // try to open serial port
   const { connection } = radio;
   logger.log(`Opening serial port #${connection.index}...`);
@@ -16,7 +16,7 @@ export const ConnectSerialRadioAction = (dispatch: React.Dispatch<ConnectionActi
   connection.open();
 };
 
-export const DisconnectSerialRadioAction = (
+export const disconnectSerialRadioAction = (
   dispatch: React.Dispatch<ConnectionAction>,
   state: ConnectionState,
 ): void => {

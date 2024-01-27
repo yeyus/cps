@@ -89,6 +89,12 @@ export class QuanshengUVK5 extends SerialRadio {
   // eslint-disable-next-line no-use-before-define
   definition = QuanshengUVK5Definition;
 
+  radioInfo?: RadioInfo;
+
+  get name(): string {
+    return `Quansheng UV-K5${this.radioInfo ? ` (${this.radioInfo?.firmwareVersion}) ` : ""}`;
+  }
+
   async sendCommand(data: Uint8Array): Promise<void> {
     logger.info(`sendCommand: command with length ${data.length}`);
     logger.hex(data);
@@ -159,6 +165,7 @@ export class QuanshengUVK5 extends SerialRadio {
     // extract radio firmware serial
     radioInfo.firmwareVersion = asciiDecoder.decode(reply.slice(4, 16));
     logger.info(`%csayHello: hello done for radio with firmware ${radioInfo.firmwareVersion}`, "color: green");
+    this.radioInfo = radioInfo;
     return radioInfo;
   }
 

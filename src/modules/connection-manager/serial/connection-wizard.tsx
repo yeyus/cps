@@ -1,6 +1,6 @@
 import * as React from "react";
 import { RadioDefinition } from "../../../configs/radio-config";
-import { ConnectSerialRadioAction, DisconnectSerialRadioAction } from "../actions";
+import { connectSerialRadioAction, disconnectSerialRadioAction } from "../actions";
 import { useConnection } from "../context";
 import { ConnectionStatus } from "../types";
 import useSerial from "./useSerial";
@@ -40,11 +40,11 @@ export default function ConnectionWizard({ radioDefinition }: ConnectionWizardPr
     const options: SerialOptions = radioDefinition.serialOptions ?? { baudRate: 9600 };
     const connection = new SerialConnection(index, port, options);
     const radioInstance = radioDefinition.createRadio(connection);
-    ConnectSerialRadioAction(dispatch, radioInstance);
+    connectSerialRadioAction(dispatch, radioInstance);
   };
 
   const onDisconnect = () => {
-    DisconnectSerialRadioAction(dispatch, state);
+    disconnectSerialRadioAction(dispatch, state);
   };
 
   const renderPortList = () => {
