@@ -1,36 +1,37 @@
 Bitwise {
   Script = Exp*
   
-  Exp = DirectiveExp? (StructExp | FieldExp | ArrayFieldExp | comment)
+  Exp =
+    | StructExp 
+    | FieldExp
+    | comment
     
   DirectiveExp = "#" directiveToken (hexaddress|offset) ";"
   
-  StructExp = "struct" "{" Exp+ "}" fieldName ("[" length "]")? ";"
+  StructExp = DirectiveExp? "struct" "{" Exp+ "}" fieldName ("[" length "]")? ";"
   
-  FieldExp = typeToken FieldDefinitionExp ";"
+  FieldExp = DirectiveExp? typeToken FieldDefinitionExp ("[" length "]")? ";"
 
   FieldDefinitionExp = 
-    | FieldMaskDefinitionListExp 
+    | FieldMaskDefinitionListExp
     | fieldName
 
   FieldMaskDefinitionExp = fieldName ":" length
 
   FieldMaskDefinitionListExp = (FieldMaskDefinitionExp ",")* FieldMaskDefinitionExp
   
-  ArrayFieldExp = typeToken fieldName "[" length "]" ";"
-  
   comment =
     | singleLineComment
     | multiLineComment
 
   multiLineComment = 
-    | "/*" multiLineCommentChars? "*/" -- alt1
+    | "/*" multiLineCommentChars? "*/"
 
   multiLineCommentChars = 
     (~"*/" any)*
   
   singleLineComment = 
-    | "//" singleLineCommentChars? -- alt1
+    | "//" singleLineCommentChars?
 
   singleLineCommentChars = 
     | singleLineCommentChar+
