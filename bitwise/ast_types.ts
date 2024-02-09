@@ -1,5 +1,25 @@
 /* eslint-disable max-classes-per-file */
 
+export type TypeToken =
+  | "bit"
+  | "u8"
+  | "u16"
+  | "ul16"
+  | "u24"
+  | "ul24"
+  | "u32"
+  | "ul32"
+  | "i8"
+  | "i16"
+  | "il16"
+  | "i24"
+  | "il24"
+  | "i32"
+  | "il32"
+  | "char"
+  | "lbcd"
+  | "bbcd";
+
 enum Endianess {
   LITTLE,
   BIG,
@@ -66,11 +86,12 @@ export class BitwiseType {
 
 export enum OffsetType {
   RELATIVE,
-  ABSOLUTE
+  ABSOLUTE,
 }
 
 export class Offset {
   public base: number;
+
   public type: OffsetType;
 
   constructor(type: OffsetType, base: number) {
@@ -129,8 +150,8 @@ export class Mask {
 export class FieldMask extends Field {
   public masks: Mask[];
 
-  constructor(type: BitwiseType, name: string, length: number) {
-    super(type, name, length);
+  constructor(type: BitwiseType, name: string, length?: number, offset?: Offset) {
+    super(type, name, length, offset);
     this.masks = [];
   }
 
@@ -145,7 +166,7 @@ export class FieldMask extends Field {
     }
 
     // eslint-disable-next-line no-param-reassign
-    mask.bitOffset = usedBitCount;
+    mask.bitOffset = 8 - (usedBitCount + mask.bitLength);
 
     this.masks.push(mask);
   }

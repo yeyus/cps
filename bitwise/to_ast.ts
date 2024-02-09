@@ -1,56 +1,62 @@
-/* eslint-disable no-console */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable import/no-extraneous-dependencies */
-import util from 'util';
+import { IterationNode, NonterminalNode } from "ohm-js";
 import { BitwiseType, Field, FieldMask, Mask, Offset, OffsetType, Struct, Comment } from "./ast_types";
-import grammar, { BitwiseSemantics } from "./bitwise.ohm-bundle";
-import { TEST } from "./test";
+import { BitwiseActionDict } from "./bitwise.ohm-bundle";
 
-const semantics: BitwiseSemantics = grammar.createSemantics();
+export const optionalExp = (node: IterationNode): NonterminalNode | null => (node.numChildren === 1 ? node.children[0] : null);
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-semantics.addOperation<any>("toAST", {
+const toAST: BitwiseActionDict<any> = {
   /*
     DirectiveExp = "#" directiveToken (hexaddress|offset) ";"
   */
   DirectiveExp(_arg0, directiveToken, base, _arg3) {
-    console.log(`rule DirectiveExp => "${this.sourceString}" ${directiveToken.sourceString} - ${base.toAST()}`);
     if (directiveToken.sourceString === "seek") {
       return new Offset(OffsetType.RELATIVE, base.toAST());
-    } else if (directiveToken.sourceString === "seekto") {
-      return new Offset(OffsetType.ABSOLUTE, base.toAST());
-    } else {
-      throw new Error("dunno");
     }
+    if (directiveToken.sourceString === "seekto") {
+      return new Offset(OffsetType.ABSOLUTE, base.toAST());
+    }
+    throw new Error("dunno");
   },
   /*
     StructExp = DirectiveExp? "struct" "{" Exp+ "}" fieldName ("[" length "]")? ";"
   */
-  StructExp(directive, _arg1, _arg2, exp, _arg4, fieldname, _arg6, length, _arg8, _arg9) {
-    const struct = new Struct(fieldname.toAST(), length.toAST());
-    
-    struct.offset = directive.toAST();
+  StructExp(directiveExp, _arg1, _arg2, exp, _arg4, fieldname, _arg6, lengthExp, _arg8, _arg9) {
+    const length = optionalExp(lengthExp)?.toAST();
 
-    exp.children.forEach(c => struct.addField(c.toAST()));
+    const struct = new Struct(fieldname.toAST(), length);
+    struct.offset = optionalExp(directiveExp)?.toAST();
+
+    exp.children.forEach((c) => {
+      const childAst = c.toAST();
+      if (childAst instanceof Comment) return;
+      struct.addField(childAst);
+    });
 
     return struct;
   },
   /*
     FieldExp = DirectiveExp? typeToken FieldDefinitionExp ("[" length "]")? ";"
   */
-  FieldExp(directive, fieldType, fieldDefinition, _arg3, length, _arg5, _arg6) {
+  FieldExp(directiveExp, fieldType, fieldDefinition, _arg3, lengthExp, _arg5, _arg6) {
     let field: Field | FieldMask;
-    
+
     const fieldDef = fieldDefinition.toAST();
+    const length = optionalExp(lengthExp)?.toAST();
+    const offset = optionalExp(directiveExp)?.toAST();
     if (typeof fieldDef === "string") {
-      field = new Field(fieldType.toAST(), fieldDef, length.toAST(), directive.toAST());
+      field = new Field(fieldType.toAST(), fieldDef, length, offset);
     } else {
-      const fieldMask = new FieldMask(fieldType.toAST(), "<multiple>", length.toAST());
-      
-      for(let i = 0; i < fieldDef.length; i += 1) {
+      const fieldMask = new FieldMask(fieldType.toAST(), "<multiple>", length, offset);
+
+      for (let i = 0; i < fieldDef.length; i += 1) {
         fieldMask.add(fieldDef[i]);
       }
       field = fieldMask;
     }
-    
+
     return field;
   },
   /*
@@ -65,7 +71,7 @@ semantics.addOperation<any>("toAST", {
   FieldMaskDefinitionListExp(arg0, _arg1, arg2) {
     const masks = [];
 
-    arg0.children.forEach(m => masks.push(m.toAST()));
+    arg0.children.forEach((m) => masks.push(m.toAST()));
     masks.push(arg2.toAST());
 
     return masks;
@@ -86,8 +92,8 @@ semantics.addOperation<any>("toAST", {
   /*
     hexdigit = digit | "a".."f" | "A".."F"
   */
-  hexdigit(_) {
-    return this.sourceString
+  hexdigit(_arg0) {
+    return this.sourceString;
   },
   fieldName(_arg0, _arg1) {
     return this.sourceString;
@@ -133,15 +139,13 @@ semantics.addOperation<any>("toAST", {
         throw new Error(`Unknown type ${typeValue}`);
     }
   },
-  length(_): number {
+  length(_arg0): number {
     return parseInt(this.sourceString, 10);
   },
+  // eslint-disable-next-line no-underscore-dangle, @typescript-eslint/no-explicit-any
   _iter(...children): any {
     return children.map((n) => n.toAST());
-  }
-});
+  },
+};
 
-const matchResult = grammar.match(TEST);
-const ast = semantics(matchResult).toAST();
-
-console.log(util.inspect(ast, false, null, true));
+export default toAST;
