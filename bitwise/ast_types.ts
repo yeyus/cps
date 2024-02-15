@@ -20,7 +20,7 @@ export type TypeToken =
   | "lbcd"
   | "bbcd";
 
-enum Endianess {
+export enum Endianess {
   LITTLE,
   BIG,
 }
@@ -61,7 +61,7 @@ export class BitwiseType {
 
   public static BBCD = new BitwiseType(1, false, Endianess.BIG, true);
 
-  public static CHAR = new BitwiseType(1, false);
+  public static CHAR = new BitwiseType(1, false, undefined, false, true);
 
   // in bytes
   public length: number;
@@ -72,11 +72,20 @@ export class BitwiseType {
 
   public isBCDEncoded: boolean;
 
-  constructor(length: number, signed: boolean, endianess?: Endianess, isBCDEncoded?: boolean) {
+  public isASCIIEncoded: boolean;
+
+  constructor(
+    length: number,
+    signed: boolean,
+    endianess?: Endianess,
+    isBCDEncoded?: boolean,
+    isASCIIEncoded?: boolean,
+  ) {
     this.length = length;
     this.signed = signed;
     this.endianess = endianess;
     this.isBCDEncoded = isBCDEncoded || false;
+    this.isASCIIEncoded = isASCIIEncoded || false;
   }
 
   toString() {

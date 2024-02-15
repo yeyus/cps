@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
 /* eslint-disable import/no-extraneous-dependencies */
-import util from "util";
+// import util from "util";
 import toAST from "./to_ast";
 import grammar, { BitwiseSemantics } from "./bitwise.ohm-bundle";
 import { TEST } from "./test";
@@ -13,9 +13,8 @@ semantics.addOperation<any>("toAST", toAST);
 semantics.addOperation<any>("toTS(name)", toTS);
 
 const matchResult = grammar.match(TEST);
-const ast = semantics(matchResult).toAST();
-
-console.log(util.inspect(ast, false, null, true));
+// const ast = semantics(matchResult).toAST();
+// console.log(util.inspect(ast, false, null, true));
 
 const codeEmitter = semantics(matchResult).toTS("QuanshengUVK5");
 

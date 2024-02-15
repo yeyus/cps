@@ -28,11 +28,13 @@ export class MemoryMapChannelAttributes {
 
   public static fromBuffer(buffer: Uint8Array, offset: number): MemoryMapChannelAttributes {
     const memoryMapChannelAttributes = new MemoryMapChannelAttributes();
-    memoryMapChannelAttributes.isScanlist1 = BitView.asBoolean(buffer, offset, 7);
-    memoryMapChannelAttributes.isScanlist2 = BitView.asBoolean(buffer, offset, 6);
-    memoryMapChannelAttributes.compander = BitView.asNumber(buffer, offset, 4, 2);
-    memoryMapChannelAttributes.isFree = BitView.asBoolean(buffer, offset, 3);
-    memoryMapChannelAttributes.band = BitView.asNumber(buffer, offset, 0, 3);
+    let currentOffset = offset ?? MemoryMapChannelAttributes.BASE;
+    memoryMapChannelAttributes.isScanlist1 = BitView.asBoolean(buffer, currentOffset, 7);
+    memoryMapChannelAttributes.isScanlist2 = BitView.asBoolean(buffer, currentOffset, 6);
+    memoryMapChannelAttributes.compander = BitView.asNumber(buffer, currentOffset, 4, 2);
+    memoryMapChannelAttributes.isFree = BitView.asBoolean(buffer, currentOffset, 3);
+    memoryMapChannelAttributes.band = BitView.asNumber(buffer, currentOffset, 0, 3);
+    currentOffset += 1;
 
     return memoryMapChannelAttributes;
   }
@@ -69,9 +71,12 @@ export class MemoryMapDtmfSettings {
 
   public static fromBuffer(buffer: Uint8Array, offset: number): MemoryMapDtmfSettings {
     const memoryMapDtmfSettings = new MemoryMapDtmfSettings();
-    memoryMapDtmfSettings.sideTone = buffer.at(MemoryMapDtmfSettings.BASE);
-    memoryMapDtmfSettings.separateCode = String.fromCharCode(buffer.at(MemoryMapDtmfSettings.BASE + 1));
-    memoryMapDtmfSettings.groupCallCode = String.fromCharCode(buffer.at(MemoryMapDtmfSettings.BASE + 2));
+    const currentOffset = offset ?? MemoryMapDtmfSettings.BASE;
+    memoryMapDtmfSettings.sideTone = buffer.at(currentOffset);
+    currentOffset += 1;
+    memoryMapDtmfSettings.separateCode = String.fromCharCode(buffer.at(currentOffset));
+    currentOffset += 1;
+    memoryMapDtmfSettings.groupCallCode = String.fromCharCode(buffer.at(currentOffset));
     // ...
 
     return memoryMapDtmfSettings;
@@ -83,8 +88,17 @@ export class QuanshengUV5KMemoryMap {
 
   public dtmfSettings: MemoryMapDtmfSettings;
 
+  public batteryLevel: number[];
+
+  public logoLine1: string;
+
+  public logoLine2: string;
+
   public static fromBuffer(buffer: Uint8Array): QuanshengUV5KMemoryMap {
+    const dataView = new DataView(buffer.buffer);
     const memoryMap = new QuanshengUV5KMemoryMap();
+
+    const currentOffset = 1234;
 
     for (let i = 0; i < 200; i += 1) {
       memoryMap.channelAttributes.push(
@@ -96,6 +110,11 @@ export class QuanshengUV5KMemoryMap {
     }
 
     memoryMap.dtmfSettings = MemoryMapDtmfSettings.fromBuffer(buffer, MemoryMapDtmfSettings.BASE);
+
+    // ul16 parsing
+    for (let i = 0; i < 6; i += 1) {
+      memoryMap.batteryLevel.push(dataView.getUint16(currentOffset + i * 2));
+    }
 
     return memoryMap;
   }
