@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable import/no-extraneous-dependencies */
 import { IterationNode, NonterminalNode } from "ohm-js";
-import { BitwiseType, Field, FieldMask, Mask, Offset, OffsetType, Struct, Comment } from "./ast_types";
-import { BitwiseActionDict } from "./bitwise.ohm-bundle";
+import { BitwiseType, Field, FieldMask, Mask, Offset, OffsetType, Struct, Comment } from "../ast_types";
+import { BitwiseActionDict } from "../bitwise.ohm-bundle";
 
 export const optionalExp = (node: IterationNode): NonterminalNode | null => (node.numChildren === 1 ? node.children[0] : null);
 

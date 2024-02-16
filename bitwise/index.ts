@@ -1,10 +1,10 @@
 /* eslint-disable no-console */
 /* eslint-disable import/no-extraneous-dependencies */
 // import util from "util";
-import toAST from "./to_ast";
+import toAST from "./operations/to_ast";
 import grammar, { BitwiseSemantics } from "./bitwise.ohm-bundle";
 import { TEST } from "./test";
-import toTS, { createFromCodeEmmit } from "./to_ts";
+import toTS, { createFromCodeEmmit } from "./operations/to_ts";
 
 const semantics: BitwiseSemantics = grammar.createSemantics();
 // eslint-disable-next-line @typescript-eslint/no-explicit-any

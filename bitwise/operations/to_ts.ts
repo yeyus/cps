@@ -1,10 +1,11 @@
 /* eslint-disable no-console */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import ts, { Node, NodeFlags, SyntaxKind, factory } from "typescript";
-import { BitwiseActionDict } from "./bitwise.ohm-bundle";
-import { Field, FieldMask, Struct, TypeToken } from "./ast_types";
+import { BitwiseActionDict } from "../bitwise.ohm-bundle";
+import { Field, FieldMask, Struct, TypeToken } from "../ast_types";
 import { optionalExp } from "./to_ast";
 import {
+  CodeEmmit,
   advanceOffsetStatement,
   createCurrentOffsetVariableStatement,
   fieldArrayDecode,
@@ -14,29 +15,7 @@ import {
   injectDataView,
   structExpArrayDecode,
   structExpSingleDecode,
-} from "./ts_generators";
-
-type DecodeStatementGenerator = (assignTo?) => ts.Statement[];
-
-class CodeEmmit {
-  public imports: ts.ImportDeclaration[];
-
-  public classes: ts.ClassDeclaration[];
-
-  public fields: ts.PropertyDeclaration[];
-
-  public decodeStatements: DecodeStatementGenerator[];
-
-  public encodeStatements: ts.Statement[];
-
-  constructor() {
-    this.imports = [];
-    this.classes = [];
-    this.fields = [];
-    this.decodeStatements = [];
-    this.encodeStatements = [];
-  }
-}
+} from "../ts_generators";
 
 const TYPE_CONVERSION: Record<TypeToken, ts.KeywordTypeNode> = {
   bit: factory.createKeywordTypeNode(ts.SyntaxKind.BooleanKeyword),
@@ -327,7 +306,7 @@ const toTS: BitwiseActionDict<any> = {
     codeEmmit.decodeStatements = [
       isArrayOfStruct
         ? structExpArrayDecode(className, fieldName, length)
-        : structExpSingleDecode(className, fieldName),
+        : structExpSingleDecode(className, fieldName, ast.byteLength, ast.offset),
     ];
 
     return codeEmmit;

@@ -1,6 +1,28 @@
 import ts, { factory } from "typescript";
 import { BitwiseType, Endianess, Offset, OffsetType } from "./ast_types";
 
+type DecodeStatementGenerator = (assignTo?) => ts.Statement[];
+
+export class CodeEmmit {
+  public imports: ts.ImportDeclaration[];
+
+  public classes: ts.ClassDeclaration[];
+
+  public fields: ts.PropertyDeclaration[];
+
+  public decodeStatements: DecodeStatementGenerator[];
+
+  public encodeStatements: ts.Statement[];
+
+  constructor() {
+    this.imports = [];
+    this.classes = [];
+    this.fields = [];
+    this.decodeStatements = [];
+    this.encodeStatements = [];
+  }
+}
+
 /*
     for (let i = 0; i < <length>; i += 1) {
       <block>
@@ -31,6 +53,54 @@ function iterateWithFor(length: number, block: ts.Statement[]): ts.ForStatement 
     ),
     factory.createBlock(block, true),
   );
+}
+
+/*
+  let currentOffset = < initializer >;
+*/
+export function createCurrentOffsetVariableStatement(initializer?: ts.Expression): ts.VariableStatement {
+  return factory.createVariableStatement(
+    undefined,
+    factory.createVariableDeclarationList(
+      [factory.createVariableDeclaration(factory.createIdentifier("currentOffset"), undefined, undefined, initializer)],
+      ts.NodeFlags.Let,
+    ),
+  );
+}
+
+/*
+  currentOffset += <offset>
+*/
+export function advanceOffsetStatement(offset: number) {
+  return () => [
+    factory.createExpressionStatement(
+      factory.createBinaryExpression(
+        factory.createIdentifier("currentOffset"),
+        factory.createToken(ts.SyntaxKind.PlusEqualsToken),
+        factory.createNumericLiteral(offset.toString(10)),
+      ),
+    ),
+  ];
+}
+
+/*
+  if offset is relative
+    currentOffset += <offset>
+  if offset is absolute
+    currentOffset = <offset>
+*/
+export function fieldOffsetDirective(offset: Offset) {
+  return offset.type === OffsetType.RELATIVE
+    ? advanceOffsetStatement(offset.base)
+    : () => [
+        factory.createExpressionStatement(
+          factory.createBinaryExpression(
+            factory.createIdentifier("currentOffset"),
+            factory.createToken(ts.SyntaxKind.EqualsToken),
+            factory.createNumericLiteral(offset.base.toString(10)),
+          ),
+        ),
+      ];
 }
 
 /*
@@ -90,31 +160,49 @@ export function structExpArrayDecode(className: string, fieldName: string, lengt
 }
 
 /*
-  memoryMap.dtmfSettings = MemoryMapDtmfSettings.fromBuffer(buffer, MemoryMapDtmfSettings.BASE);
+  if Struct has ABSOLUTE OFFSET
+    currentOffset = <MemoryMapDtmfSettings.BASE>;
+    memoryMap.dtmfSettings = MemoryMapDtmfSettings.fromBuffer(buffer, currentOffset);
+    currentOffset += <Struct>
+  if Struct has RELATIVE OFFSET
+    currentOffset += 
 */
-export function structExpSingleDecode(className: string, fieldName: string) {
-  return (assignTo: string) => [
-    factory.createExpressionStatement(
-      factory.createBinaryExpression(
-        factory.createPropertyAccessExpression(factory.createIdentifier(assignTo), factory.createIdentifier(fieldName)),
-        factory.createToken(ts.SyntaxKind.EqualsToken),
-        factory.createCallExpression(
+export function structExpSingleDecode(
+  className: string,
+  fieldName: string,
+  structLength: number,
+  offset?: Offset,
+): DecodeStatementGenerator {
+  return (assignTo: string) =>
+    [
+      offset && offset.type === OffsetType.ABSOLUTE
+        ? factory.createExpressionStatement(
+            factory.createBinaryExpression(
+              factory.createIdentifier("currentOffset"),
+              factory.createToken(ts.SyntaxKind.EqualsToken),
+              factory.createNumericLiteral(offset.base.toString(10)),
+            ),
+          )
+        : null,
+      factory.createExpressionStatement(
+        factory.createBinaryExpression(
           factory.createPropertyAccessExpression(
-            factory.createIdentifier(className),
-            factory.createIdentifier("fromBuffer"),
+            factory.createIdentifier(assignTo),
+            factory.createIdentifier(fieldName),
           ),
-          undefined,
-          [
-            factory.createIdentifier("buffer"),
+          factory.createToken(ts.SyntaxKind.EqualsToken),
+          factory.createCallExpression(
             factory.createPropertyAccessExpression(
               factory.createIdentifier(className),
-              factory.createIdentifier("BASE"),
+              factory.createIdentifier("fromBuffer"),
             ),
-          ],
+            undefined,
+            [factory.createIdentifier("buffer"), factory.createIdentifier("currentOffset")],
+          ),
         ),
       ),
-    ),
-  ];
+      ...advanceOffsetStatement(structLength)(),
+    ].filter((e) => e != null);
 }
 
 /*
@@ -230,54 +318,6 @@ export function fieldArrayDecode(fieldName: string, type: BitwiseType, length: n
       ),
     ]),
   ];
-}
-
-/*
-  let currentOffset = < initializer >;
-*/
-export function createCurrentOffsetVariableStatement(initializer?: ts.Expression): ts.VariableStatement {
-  return factory.createVariableStatement(
-    undefined,
-    factory.createVariableDeclarationList(
-      [factory.createVariableDeclaration(factory.createIdentifier("currentOffset"), undefined, undefined, initializer)],
-      ts.NodeFlags.Let,
-    ),
-  );
-}
-
-/*
-  currentOffset += <offset>
-*/
-export function advanceOffsetStatement(offset: number) {
-  return () => [
-    factory.createExpressionStatement(
-      factory.createBinaryExpression(
-        factory.createIdentifier("currentOffset"),
-        factory.createToken(ts.SyntaxKind.PlusEqualsToken),
-        factory.createNumericLiteral(offset.toString(10)),
-      ),
-    ),
-  ];
-}
-
-/*
-  if offset is relative
-    currentOffset += <offset>
-  if offset is absolute
-    currentOffset = <offset>
-*/
-export function fieldOffsetDirective(offset: Offset) {
-  return offset.type === OffsetType.RELATIVE
-    ? advanceOffsetStatement(offset.base)
-    : () => [
-        factory.createExpressionStatement(
-          factory.createBinaryExpression(
-            factory.createIdentifier("currentOffset"),
-            factory.createToken(ts.SyntaxKind.EqualsToken),
-            factory.createNumericLiteral(offset.base.toString(10)),
-          ),
-        ),
-      ];
 }
 
 /*
