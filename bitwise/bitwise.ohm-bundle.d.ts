@@ -15,6 +15,8 @@ export interface BitwiseActionDict<T> extends BaseActionDict<T> {
   Script?: (this: NonterminalNode, arg0: IterationNode) => T;
   Exp?: (this: NonterminalNode, arg0: NonterminalNode) => T;
   DirectiveExp?: (this: NonterminalNode, arg0: TerminalNode, arg1: NonterminalNode, arg2: NonterminalNode, arg3: TerminalNode) => T;
+  StructDefinitionExp?: (this: NonterminalNode, arg0: TerminalNode, arg1: NonterminalNode, arg2: TerminalNode, arg3: IterationNode, arg4: TerminalNode, arg5: TerminalNode) => T;
+  StructDeclarationExp?: (this: NonterminalNode, arg0: TerminalNode, arg1: NonterminalNode, arg2: NonterminalNode, arg3: TerminalNode) => T;
   StructExp?: (this: NonterminalNode, arg0: IterationNode, arg1: TerminalNode, arg2: TerminalNode, arg3: IterationNode, arg4: TerminalNode, arg5: NonterminalNode, arg6: IterationNode, arg7: IterationNode, arg8: IterationNode, arg9: TerminalNode) => T;
   FieldExp?: (this: NonterminalNode, arg0: IterationNode, arg1: NonterminalNode, arg2: NonterminalNode, arg3: IterationNode, arg4: IterationNode, arg5: IterationNode, arg6: TerminalNode) => T;
   FieldDefinitionExp?: (this: NonterminalNode, arg0: NonterminalNode) => T;

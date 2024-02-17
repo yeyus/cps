@@ -6,8 +6,8 @@
 npx ohm generateBundles --withTypes bitwise/bitwise.ohm
 ```
 
-## run toAST
+## Generate TS mappings for bitwise memmap
 
 ```
-npx ts-node bitwise/to_ast.ts
+npx tsx bitwise/. generate src/configs/radios/quansheng-uvk5.memmap
 ```

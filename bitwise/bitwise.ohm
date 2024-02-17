@@ -2,11 +2,17 @@ Bitwise {
   Script = Exp*
   
   Exp =
-    | StructExp 
+    | StructExp
+    | StructDefinitionExp
+    | StructDeclarationExp
     | FieldExp
     | comment
     
   DirectiveExp = "#" directiveToken (hexaddress|offset) ";"
+  
+  StructDefinitionExp = "struct" fieldName "{" Exp+ "}" ";"
+  
+  StructDeclarationExp = "struct" fieldName fieldName ";"
   
   StructExp = DirectiveExp? "struct" "{" Exp+ "}" fieldName ("[" length "]")? ";"
   
