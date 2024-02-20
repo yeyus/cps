@@ -2,7 +2,15 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import ts, { Node, NodeFlags, SyntaxKind, factory } from "typescript";
 import { BitwiseActionDict } from "../bitwise.ohm-bundle";
-import { Field, FieldMask, Struct, TypeToken } from "../ast_types";
+import {
+  PrimitiveTypeField,
+  MaskedField,
+  StructFieldReference,
+  Offset,
+  Struct,
+  StructDefinition,
+  TypeToken,
+} from "../ast/types";
 import { optionalExp } from "./to_ast";
 import {
   CodeEmmit,
@@ -12,10 +20,13 @@ import {
   fieldMaskSingleDecode,
   fieldOffsetDirective,
   fieldSingleDecode,
+  generateStructClassDeclaration,
   injectDataView,
   structExpArrayDecode,
   structExpSingleDecode,
 } from "../ts_generators";
+import { attachDefinitionsToAST, capitalize, snakeToCamel } from "./utils";
+import { ASTNode, NodeTypes } from "../ast/base";
 
 const TYPE_CONVERSION: Record<TypeToken, ts.KeywordTypeNode> = {
   bit: factory.createKeywordTypeNode(ts.SyntaxKind.BooleanKeyword),
@@ -77,17 +88,13 @@ export function createFromCodeEmmit(codeEmmit: CodeEmmit): string {
   return printer.printFile(sourceFile);
 }
 
-const snakeToCamel = (str: string) =>
-  str.toLowerCase().replace(/([-_][a-z])/g, (group) => group.toUpperCase().replace("-", "").replace("_", ""));
-
-const capitalize = (str: string): string => str.charAt(0).toUpperCase() + str.slice(1);
-
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const toTS: BitwiseActionDict<any> = {
   Script(exps) {
+    const { definitionTable } = this.args;
     const codeEmmit = new CodeEmmit();
 
-    const childrenCodeEmmits: CodeEmmit[] = exps.children.map((c) => c.toTS("<internal>"));
+    const childrenCodeEmmits: CodeEmmit[] = exps.children.map((c) => c.toTS("<internal>", definitionTable));
 
     // import BitView
     codeEmmit.imports = [
@@ -172,121 +179,91 @@ const toTS: BitwiseActionDict<any> = {
     return codeEmmit;
   },
   /*
-    StructExp = DirectiveExp? "struct" "{" Exp+ "}" fieldName ("[" length "]")? ";"
+    StructDefinitionExp = "struct" fieldName "{" Exp+ "}" ";"
   */
-  StructExp(directiveExp, _arg1, _arg2, exps, _arg4, fieldnameExp, _arg6, lengthExp, _arg8, _arg9) {
+  StructDefinitionExp(_arg0, fieldNameExp, _arg2, exps, _arg4, _arg5) {
+    const { definitionTable } = this.args;
     const ast: Struct = this.toAST();
     const codeEmmit = new CodeEmmit();
 
-    const childrenCodeEmmits: CodeEmmit[] = exps.children.map((c) => c.toTS("<internal>"));
+    const childrenCodeEmmits: CodeEmmit[] = exps.children.map((c) => c.toTS("<internal>", definitionTable));
+
+    const fieldName = snakeToCamel(fieldNameExp.toTS("", definitionTable));
+    const className = `MemoryMap${capitalize(fieldName)}`;
+
+    console.log(`rule StructDefinitionExp => structName=${fieldName} className=${className}`);
+
+    codeEmmit.classes = [
+      generateStructClassDeclaration(className, fieldName, ast.byteLength, childrenCodeEmmits, ast.offset),
+    ];
+
+    return codeEmmit;
+  },
+  /*
+    StructDeclarationExp = "struct" fieldName fieldName ("[" length "]")? ";"
+  */
+  StructDeclarationExp(directiveExp, _arg0, structNameExp, fieldNameExp, _arg3, lengthExp, _arg5, _arg6) {
+    const offset: Offset | undefined = optionalExp(directiveExp)?.toAST();
+    const { definitionTable } = this.args;
+    const codeEmmit = new CodeEmmit();
+
+    const length = optionalExp(lengthExp)?.toTS("", definitionTable);
+    const isArrayOfStruct = lengthExp.numChildren > 0;
+    const fieldName = snakeToCamel(fieldNameExp.toTS("", definitionTable));
+    const structName = snakeToCamel(structNameExp.toTS("", definitionTable));
+    const className = `MemoryMap${capitalize(structName)}`;
+
+    const structDefinition: StructDefinition | undefined = definitionTable.get(structName);
+
+    console.log(`rule StructDeclarationExp => className=${className} fieldName=${fieldName}`);
+
+    codeEmmit.fields = [
+      factory.createPropertyDeclaration(
+        [factory.createToken(ts.SyntaxKind.PublicKeyword)],
+        factory.createIdentifier(fieldName),
+        undefined,
+        isArrayOfStruct
+          ? factory.createArrayTypeNode(factory.createTypeReferenceNode(factory.createIdentifier(className), undefined))
+          : factory.createTypeReferenceNode(factory.createIdentifier(className), undefined),
+        undefined,
+      ),
+    ];
+
+    console.log(
+      `rule StructDeclarationExp => DEBUG: structDefinition => ${structDefinition} byteLength=${structDefinition.byteLength}`,
+    );
+    codeEmmit.decodeStatements = [
+      isArrayOfStruct
+        ? structExpArrayDecode(className, fieldName, length)
+        : structExpSingleDecode(className, fieldName, offset),
+    ];
+
+    return codeEmmit;
+  },
+  /*
+    StructExp = DirectiveExp? "struct" "{" Exp+ "}" fieldName ("[" length "]")? ";"
+  */
+  StructExp(directiveExp, _arg1, _arg2, exps, _arg4, fieldnameExp, _arg6, lengthExp, _arg8, _arg9) {
+    const { definitionTable } = this.args;
+    const ast: ASTNode = attachDefinitionsToAST(this.toAST(), definitionTable);
+    const struct = ast as Struct;
+    const offset: Offset | undefined = optionalExp(directiveExp)?.toAST();
+    const codeEmmit = new CodeEmmit();
+
+    const childrenCodeEmmits: CodeEmmit[] = exps.children.map((c) => c.toTS("<internal>", definitionTable));
 
     codeEmmit.imports = childrenCodeEmmits.flatMap((ce) => ce.imports);
 
-    const fieldName = snakeToCamel(fieldnameExp.toTS(""));
+    const fieldName = snakeToCamel(fieldnameExp.toTS("", definitionTable));
     const className = `MemoryMap${capitalize(fieldName)}`;
-    const length = optionalExp(lengthExp)?.toTS("");
+    const length = optionalExp(lengthExp)?.toTS("", definitionTable);
     const isArrayOfStruct = lengthExp.numChildren > 0;
 
     console.log(`rule StructExp => fielName=${fieldName} className=${className}`);
 
     codeEmmit.classes = [
       ...childrenCodeEmmits.flatMap((ce) => ce.classes).filter((e) => e != null),
-      factory.createClassDeclaration(
-        [factory.createToken(ts.SyntaxKind.ExportKeyword)],
-        factory.createIdentifier(className),
-        undefined,
-        undefined,
-        [
-          ast.offset != null
-            ? factory.createPropertyDeclaration(
-                [factory.createToken(ts.SyntaxKind.PublicKeyword), factory.createToken(ts.SyntaxKind.StaticKeyword)],
-                factory.createIdentifier("BASE"),
-                undefined,
-                factory.createKeywordTypeNode(ts.SyntaxKind.NumberKeyword),
-                factory.createNumericLiteral(ast.offset.base),
-              )
-            : undefined,
-          factory.createPropertyDeclaration(
-            [factory.createToken(ts.SyntaxKind.PublicKeyword), factory.createToken(ts.SyntaxKind.StaticKeyword)],
-            factory.createIdentifier("LENGTH"),
-            undefined,
-            factory.createKeywordTypeNode(ts.SyntaxKind.NumberKeyword),
-            factory.createNumericLiteral(ast.byteLength),
-          ),
-          // fields
-          ...childrenCodeEmmits.flatMap((ce) => ce.fields),
-          // decodeMethod
-          factory.createMethodDeclaration(
-            [factory.createToken(ts.SyntaxKind.PublicKeyword), factory.createToken(ts.SyntaxKind.StaticKeyword)],
-            undefined,
-            factory.createIdentifier("fromBuffer"),
-            undefined,
-            undefined,
-            [
-              factory.createParameterDeclaration(
-                undefined,
-                undefined,
-                factory.createIdentifier("buffer"),
-                undefined,
-                factory.createTypeReferenceNode(factory.createIdentifier("Uint8Array"), undefined),
-                undefined,
-              ),
-              factory.createParameterDeclaration(
-                undefined,
-                undefined,
-                factory.createIdentifier("offset"),
-                undefined,
-                factory.createKeywordTypeNode(ts.SyntaxKind.NumberKeyword),
-                undefined,
-              ),
-            ],
-            factory.createTypeReferenceNode(factory.createIdentifier(className), undefined),
-            factory.createBlock(
-              [
-                injectDataView(),
-                /*
-                  const fieldName = new Classname();
-                */
-                factory.createVariableStatement(
-                  undefined,
-                  factory.createVariableDeclarationList(
-                    [
-                      factory.createVariableDeclaration(
-                        factory.createIdentifier(fieldName),
-                        undefined,
-                        undefined,
-                        factory.createNewExpression(factory.createIdentifier(className), undefined, []),
-                      ),
-                    ],
-                    ts.NodeFlags.Const,
-                  ),
-                ),
-                /*
-                  ast.offset => let currentOffset = offset ?? MemoryMapPerbandpowersettings.BASE;
-                  !ast.offset => let currentOffset = offset;
-                */
-                createCurrentOffsetVariableStatement(
-                  ast.offset != null
-                    ? factory.createBinaryExpression(
-                        factory.createIdentifier("offset"),
-                        factory.createToken(ts.SyntaxKind.QuestionQuestionToken),
-                        factory.createPropertyAccessExpression(
-                          factory.createIdentifier(className),
-                          factory.createIdentifier("BASE"),
-                        ),
-                      )
-                    : factory.createIdentifier("offset"),
-                ),
-                // decodeStatements
-                ...childrenCodeEmmits.flatMap((ce) => ce.decodeStatements).flatMap((generator) => generator(fieldName)),
-                // return statements
-                factory.createReturnStatement(factory.createIdentifier(fieldName)),
-              ],
-              true,
-            ),
-          ),
-        ].filter((e) => e != null),
-      ),
+      generateStructClassDeclaration(className, fieldName, struct.byteLength, childrenCodeEmmits, offset),
     ];
 
     codeEmmit.fields = [
@@ -306,7 +283,7 @@ const toTS: BitwiseActionDict<any> = {
     codeEmmit.decodeStatements = [
       isArrayOfStruct
         ? structExpArrayDecode(className, fieldName, length)
-        : structExpSingleDecode(className, fieldName, ast.byteLength, ast.offset),
+        : structExpSingleDecode(className, fieldName, offset),
     ];
 
     return codeEmmit;
@@ -315,18 +292,18 @@ const toTS: BitwiseActionDict<any> = {
     FieldExp = DirectiveExp? typeToken FieldDefinitionExp ("[" length "]")? ";"
   */
   FieldExp(directive, typeToken, fieldDefinition, _arg3, length, _arg5, _arg6) {
+    const { definitionTable } = this.args;
     const codeEmmit = new CodeEmmit();
 
-    const ast: Field | FieldMask = this.toAST();
+    const ast: ASTNode = attachDefinitionsToAST(this.toAST(), definitionTable);
 
-    const typeNode: ts.KeywordTypeNode = typeToken.toTS("");
-    const isFieldArray = ast.length > 1;
+    const typeNode: ts.KeywordTypeNode = typeToken.toTS("", definitionTable);
 
-    if (ast instanceof FieldMask) {
-      const fieldMask: FieldMask = ast;
+    if (ast.kind === NodeTypes.FIELD_MASK) {
+      const maskedField: MaskedField = ast as MaskedField;
 
-      for (let i = 0; i < fieldMask.masks.length; i += 1) {
-        const mask = fieldMask.masks[i];
+      for (let i = 0; i < maskedField.children.length; i += 1) {
+        const mask = maskedField.children[i];
         const maskName = snakeToCamel(mask.name);
         codeEmmit.fields.push(
           factory.createPropertyDeclaration(
@@ -346,8 +323,10 @@ const toTS: BitwiseActionDict<any> = {
       }
 
       codeEmmit.decodeStatements.push(advanceOffsetStatement(1));
-    } else {
-      const fieldName = snakeToCamel(ast.name);
+    } else if (ast.kind === NodeTypes.PRIMITIVE_TYPE_FIELD) {
+      const field = ast as PrimitiveTypeField;
+      const isFieldArray = field.length > 1;
+      const fieldName = snakeToCamel(field.name);
       codeEmmit.fields = [
         factory.createPropertyDeclaration(
           [factory.createToken(ts.SyntaxKind.PublicKeyword)],
@@ -359,12 +338,14 @@ const toTS: BitwiseActionDict<any> = {
       ];
 
       codeEmmit.decodeStatements = [
-        ast.offset != null ? fieldOffsetDirective(ast.offset) : null,
-        ast.length > 1 ? fieldArrayDecode(fieldName, ast.type, ast.length) : fieldSingleDecode(fieldName, ast.type),
-        advanceOffsetStatement(ast.byteLength),
+        field.offset != null ? fieldOffsetDirective(field.offset) : null,
+        isFieldArray ? fieldArrayDecode(fieldName, field.type, field.length) : fieldSingleDecode(fieldName, field.type),
+        advanceOffsetStatement(field.byteLength),
       ].filter((e) => e != null);
 
-      console.log(`rule FieldExp (field) => fieldName=${fieldName} length=${ast.length}`);
+      console.log(`rule FieldExp (field) => fieldName=${fieldName} length=${field.length}`);
+    } else {
+      throw new Error(`Unknown Field type`);
     }
 
     return codeEmmit;
@@ -388,7 +369,7 @@ const toTS: BitwiseActionDict<any> = {
   },
   // eslint-disable-next-line no-underscore-dangle, @typescript-eslint/no-explicit-any
   _iter(...children): any {
-    return children.map((n) => n.toTS(""));
+    return children.map((n) => n.toTS("", this.args.definitionTable));
   },
 };
 

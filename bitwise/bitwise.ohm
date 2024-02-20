@@ -12,7 +12,7 @@ Bitwise {
   
   StructDefinitionExp = "struct" fieldName "{" Exp+ "}" ";"
   
-  StructDeclarationExp = "struct" fieldName fieldName ";"
+  StructDeclarationExp = DirectiveExp? "struct" fieldName fieldName ("[" length "]")? ";"
   
   StructExp = DirectiveExp? "struct" "{" Exp+ "}" fieldName ("[" length "]")? ";"
   

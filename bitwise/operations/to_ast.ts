@@ -1,13 +1,38 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable import/no-extraneous-dependencies */
 import { IterationNode, NonterminalNode } from "ohm-js";
-import { BitwiseType, Field, FieldMask, Mask, Offset, OffsetType, Struct, Comment } from "../ast_types";
+import {
+  BitwiseType,
+  PrimitiveTypeField,
+  MaskedField,
+  Mask,
+  Offset,
+  OffsetType,
+  Struct,
+  Comment,
+  StructDefinition,
+  StructFieldReference,
+  Script,
+} from "../ast/types";
 import { BitwiseActionDict } from "../bitwise.ohm-bundle";
 
-export const optionalExp = (node: IterationNode): NonterminalNode | null => (node.numChildren === 1 ? node.children[0] : null);
+export const optionalExp = (node: IterationNode): NonterminalNode | null =>
+  node.numChildren === 1 ? node.children[0] : null;
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const toAST: BitwiseActionDict<any> = {
+  /*
+    Script = Exp*
+  */
+  Script(exps) {
+    const script = new Script();
+
+    exps.children.forEach((e) => {
+      script.add(e.toAST());
+    });
+
+    return script;
+  },
   /*
     DirectiveExp = "#" directiveToken (hexaddress|offset) ";"
   */
@@ -21,6 +46,33 @@ const toAST: BitwiseActionDict<any> = {
     throw new Error("dunno");
   },
   /*
+    StructDefinitionExp = "struct" fieldName "{" Exp+ "}" ";"
+  */
+  StructDefinitionExp(_arg0, structNameExp, _arg2, exp, _arg4, _arg5) {
+    const name = structNameExp.toAST();
+
+    const structDefinition = new StructDefinition(name);
+
+    exp.children.forEach((c) => {
+      const childAst = c.toAST();
+      if (childAst instanceof Comment) return;
+      structDefinition.addMember(childAst);
+    });
+
+    return structDefinition;
+  },
+  /*
+    StructDeclarationExp = DirectiveExp? "struct" fieldName fieldName ("[" length "]")? ";"
+  */
+  StructDeclarationExp(directiveExp, _arg0, structNameExp, fieldNameExp, _arg3, lengthExp, _arg5, _arg6) {
+    const length = optionalExp(lengthExp)?.toAST();
+    const structName = structNameExp.toAST();
+    const fieldName = fieldNameExp.toAST();
+    const offset = optionalExp(directiveExp)?.toAST();
+
+    return new StructFieldReference(fieldName, structName, length, offset);
+  },
+  /*
     StructExp = DirectiveExp? "struct" "{" Exp+ "}" fieldName ("[" length "]")? ";"
   */
   StructExp(directiveExp, _arg1, _arg2, exp, _arg4, fieldname, _arg6, lengthExp, _arg8, _arg9) {
@@ -32,7 +84,7 @@ const toAST: BitwiseActionDict<any> = {
     exp.children.forEach((c) => {
       const childAst = c.toAST();
       if (childAst instanceof Comment) return;
-      struct.addField(childAst);
+      struct.addMember(childAst);
     });
 
     return struct;
@@ -41,15 +93,15 @@ const toAST: BitwiseActionDict<any> = {
     FieldExp = DirectiveExp? typeToken FieldDefinitionExp ("[" length "]")? ";"
   */
   FieldExp(directiveExp, fieldType, fieldDefinition, _arg3, lengthExp, _arg5, _arg6) {
-    let field: Field | FieldMask;
+    let field: PrimitiveTypeField | MaskedField;
 
     const fieldDef = fieldDefinition.toAST();
     const length = optionalExp(lengthExp)?.toAST();
     const offset = optionalExp(directiveExp)?.toAST();
     if (typeof fieldDef === "string") {
-      field = new Field(fieldType.toAST(), fieldDef, length, offset);
+      field = new PrimitiveTypeField(fieldType.toAST(), fieldDef, length, offset);
     } else {
-      const fieldMask = new FieldMask(fieldType.toAST(), "<multiple>", length, offset);
+      const fieldMask = new MaskedField(fieldType.toAST(), "<multiple>", length, offset);
 
       for (let i = 0; i < fieldDef.length; i += 1) {
         fieldMask.add(fieldDef[i]);

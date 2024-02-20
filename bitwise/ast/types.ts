@@ -1,4 +1,7 @@
+/* eslint-disable no-use-before-define */
 /* eslint-disable max-classes-per-file */
+
+import { ASTNode, ASTNodeTerminal, HasByteLength, NodeTypes } from "./base";
 
 export type TypeToken =
   | "bit"
@@ -98,12 +101,26 @@ export enum OffsetType {
   ABSOLUTE,
 }
 
-export class Offset {
+type Member = PrimitiveTypeField | MaskedField | Struct | StructFieldReference;
+
+export class Script extends ASTNode {
+  constructor() {
+    super(NodeTypes.SCRIPT);
+    this.children = [];
+  }
+
+  public add(node: ASTNode) {
+    this.children.push(node);
+  }
+}
+
+export class Offset extends ASTNodeTerminal {
   public base: number;
 
   public type: OffsetType;
 
   constructor(type: OffsetType, base: number) {
+    super(NodeTypes.OFFSET);
     this.base = base;
     this.type = type;
   }
@@ -113,16 +130,17 @@ export class Offset {
   }
 }
 
-export class Field {
+export class PrimitiveTypeField extends ASTNodeTerminal implements HasByteLength {
   public type: BitwiseType;
 
-  public name?: string;
+  public name: string;
 
   public length: number;
 
   public offset?: Offset;
 
-  constructor(type: BitwiseType, name?: string, length?: number, offset?: Offset) {
+  constructor(type: BitwiseType, name: string, length?: number, offset?: Offset) {
+    super(NodeTypes.PRIMITIVE_TYPE_FIELD);
     this.type = type;
     this.name = name;
     this.length = length ?? 1;
@@ -134,11 +152,11 @@ export class Field {
   }
 
   toString() {
-    return `[Field name=${this.name} type=${this.type} length=${this.length} offset=${this.offset}]`;
+    return `[PrimitiveTypeField name=${this.name} type=${this.type} length=${this.length} offset=${this.offset}]`;
   }
 }
 
-export class Mask {
+export class Mask extends ASTNodeTerminal {
   public name: string;
 
   public bitLength: number;
@@ -146,6 +164,7 @@ export class Mask {
   public bitOffset: number | undefined;
 
   constructor(name: string, bitLength: number, bitOffset?: number) {
+    super(NodeTypes.MASK);
     this.name = name;
     this.bitLength = bitLength;
     this.bitOffset = bitOffset;
@@ -156,66 +175,126 @@ export class Mask {
   }
 }
 
-export class FieldMask extends Field {
-  public masks: Mask[];
+export class MaskedField extends ASTNode implements HasByteLength {
+  public type: BitwiseType;
 
-  constructor(type: BitwiseType, name: string, length?: number, offset?: Offset) {
-    super(type, name, length, offset);
-    this.masks = [];
+  public offset?: Offset;
+
+  public declare children?: Mask[];
+
+  constructor(type: BitwiseType, offset?: Offset) {
+    super(NodeTypes.FIELD_MASK);
+    this.type = type;
+    this.offset = offset;
+    this.children = [];
+  }
+
+  get byteLength(): number {
+    return this.type.length;
   }
 
   add(mask: Mask) {
     let usedBitCount = 0;
-    for (let i = 0; i < this.masks.length; i += 1) {
-      usedBitCount += this.masks[i].bitLength;
+    for (let i = 0; i < this.children.length; i += 1) {
+      usedBitCount += this.children[i].bitLength;
     }
 
     if (usedBitCount + mask.bitLength > this.type.length * 8) {
-      throw new Error(`Mask ${mask.name} on field ${this.name} doesn't fit`);
+      throw new Error(`Mask ${mask.name} doesn't fit`);
     }
 
     // eslint-disable-next-line no-param-reassign
     mask.bitOffset = 8 - (usedBitCount + mask.bitLength);
 
-    this.masks.push(mask);
+    this.children.push(mask);
   }
 
   toString() {
-    return `[MaskedField name=${this.name} type=${this.type} length=${this.length} masks=${this.masks}]`;
+    return `[MaskedField type=${this.type} masks=${this.children}]`;
   }
 }
 
-export class Struct {
+export class StructDefinition extends ASTNode implements HasByteLength {
   public name: string;
 
-  public length: number;
+  public declare children: Member[];
 
-  public fields: Field[];
-
-  public offset?: Offset;
-
-  constructor(name: string, length?: number, offset?: Offset) {
+  constructor(name: string) {
+    super(NodeTypes.STRUCT_DEFINITION);
     this.name = name;
-    this.length = length ?? 1;
-    this.fields = [];
-    this.offset = offset;
+    this.children = [];
   }
 
   get byteLength(): number {
     let innerByteLength = 0;
-    for (let i = 0; i < this.fields.length; i += 1) {
-      innerByteLength += this.fields[i].byteLength;
+    for (let i = 0; i < this.children.length; i += 1) {
+      innerByteLength += this.children[i].byteLength;
     }
 
-    return innerByteLength * this.length;
+    return innerByteLength;
   }
 
-  addField(f: Field) {
-    this.fields.push(f);
+  addMember(f: Member) {
+    this.children.push(f);
   }
 
   toString() {
-    return `[Struct name=${this.name} length=${this.length} fields=${this.fields} offset=${this.offset}]`;
+    return `[StructDefinition name=${this.name} fields=${this.children}]`;
+  }
+}
+
+export class Struct extends StructDefinition {
+  public length: number;
+
+  public offset?: Offset;
+
+  constructor(name: string, length?: number, offset?: Offset) {
+    super(name);
+    this.length = length ?? 1;
+    this.offset = offset;
+  }
+
+  get byteLength(): number {
+    return super.byteLength * this.length;
+  }
+
+  toString() {
+    return `[Struct name=${this.name} length=${this.length} fields=${this.children} offset=${this.offset}]`;
+  }
+}
+
+export class StructFieldReference extends ASTNodeTerminal implements HasByteLength {
+  public structName: string;
+
+  public name: string;
+
+  public length: number;
+
+  public offset?: Offset;
+
+  public definition?: StructDefinition;
+
+  constructor(name: string, structName: string, length?: number, offset?: Offset) {
+    super(NodeTypes.STRUCT_REFERENCE);
+    this.name = name;
+    this.structName = structName;
+    this.length = length ?? 1;
+    this.offset = offset;
+  }
+
+  public attachDefinition(definition: StructDefinition) {
+    this.definition = definition;
+  }
+
+  get byteLength(): number {
+    if (this.definition == null) {
+      throw new Error(`No ${this.structName} definition attached to ${this.name}`);
+    }
+    return this.definition.byteLength * this.length;
+  }
+
+  toString() {
+    return `[StructFieldReference structName=${this.structName} name=${this.name} length=${this.length} offset=${this.offset}]`;
   }
 }
 
@@ -230,3 +309,5 @@ export class Comment {
     return `[Comment message=${this.message}]`;
   }
 }
+
+export type DefinitionTable = Map<string, StructDefinition>;

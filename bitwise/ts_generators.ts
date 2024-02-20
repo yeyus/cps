@@ -1,5 +1,5 @@
 import ts, { factory } from "typescript";
-import { BitwiseType, Endianess, Offset, OffsetType } from "./ast_types";
+import { BitwiseType, Endianess, Offset, OffsetType } from "./ast/types";
 
 type DecodeStatementGenerator = (assignTo?) => ts.Statement[];
 
@@ -167,12 +167,7 @@ export function structExpArrayDecode(className: string, fieldName: string, lengt
   if Struct has RELATIVE OFFSET
     currentOffset += 
 */
-export function structExpSingleDecode(
-  className: string,
-  fieldName: string,
-  structLength: number,
-  offset?: Offset,
-): DecodeStatementGenerator {
+export function structExpSingleDecode(className: string, fieldName: string, offset?: Offset): DecodeStatementGenerator {
   return (assignTo: string) =>
     [
       offset && offset.type === OffsetType.ABSOLUTE
@@ -201,7 +196,16 @@ export function structExpSingleDecode(
           ),
         ),
       ),
-      ...advanceOffsetStatement(structLength)(),
+      factory.createExpressionStatement(
+        factory.createBinaryExpression(
+          factory.createIdentifier("currentOffset"),
+          factory.createToken(ts.SyntaxKind.PlusEqualsToken),
+          factory.createPropertyAccessExpression(
+            factory.createIdentifier(className),
+            factory.createIdentifier("LENGTH"),
+          ),
+        ),
+      ),
     ].filter((e) => e != null);
 }
 
@@ -253,7 +257,21 @@ function fieldTypeDecodeCallExpression(type: BitwiseType, offsetArgument: ts.Exp
     );
   }
   if (type.isBCDEncoded) {
-    throw new Error("Not implemented");
+    return factory.createCallExpression(factory.createIdentifier("parseInt"), undefined, [
+      factory.createCallExpression(
+        factory.createPropertyAccessExpression(
+          factory.createCallExpression(
+            factory.createPropertyAccessExpression(factory.createIdentifier("buffer"), factory.createIdentifier("at")),
+            undefined,
+            [offsetArgument],
+          ),
+          factory.createIdentifier("toString"),
+        ),
+        undefined,
+        [factory.createNumericLiteral("16")],
+      ),
+      factory.createNumericLiteral("10"),
+    ]);
   }
   /* number */
   return factory.createCallExpression(
@@ -342,5 +360,110 @@ export function injectDataView() {
       ],
       ts.NodeFlags.Const,
     ),
+  );
+}
+
+export function generateStructClassDeclaration(
+  className: string,
+  fieldName: string,
+  byteLength: number,
+  childrenCodeEmmits: CodeEmmit[],
+  offset?: Offset,
+) {
+  return factory.createClassDeclaration(
+    [factory.createToken(ts.SyntaxKind.ExportKeyword)],
+    factory.createIdentifier(className),
+    undefined,
+    undefined,
+    [
+      offset != null
+        ? factory.createPropertyDeclaration(
+            [factory.createToken(ts.SyntaxKind.PublicKeyword), factory.createToken(ts.SyntaxKind.StaticKeyword)],
+            factory.createIdentifier("BASE"),
+            undefined,
+            factory.createKeywordTypeNode(ts.SyntaxKind.NumberKeyword),
+            factory.createNumericLiteral(offset.base),
+          )
+        : undefined,
+      factory.createPropertyDeclaration(
+        [factory.createToken(ts.SyntaxKind.PublicKeyword), factory.createToken(ts.SyntaxKind.StaticKeyword)],
+        factory.createIdentifier("LENGTH"),
+        undefined,
+        factory.createKeywordTypeNode(ts.SyntaxKind.NumberKeyword),
+        factory.createNumericLiteral(byteLength),
+      ),
+      // fields
+      ...childrenCodeEmmits.flatMap((ce) => ce.fields),
+      // decodeMethod
+      factory.createMethodDeclaration(
+        [factory.createToken(ts.SyntaxKind.PublicKeyword), factory.createToken(ts.SyntaxKind.StaticKeyword)],
+        undefined,
+        factory.createIdentifier("fromBuffer"),
+        undefined,
+        undefined,
+        [
+          factory.createParameterDeclaration(
+            undefined,
+            undefined,
+            factory.createIdentifier("buffer"),
+            undefined,
+            factory.createTypeReferenceNode(factory.createIdentifier("Uint8Array"), undefined),
+            undefined,
+          ),
+          factory.createParameterDeclaration(
+            undefined,
+            undefined,
+            factory.createIdentifier("offset"),
+            undefined,
+            factory.createKeywordTypeNode(ts.SyntaxKind.NumberKeyword),
+            undefined,
+          ),
+        ],
+        factory.createTypeReferenceNode(factory.createIdentifier(className), undefined),
+        factory.createBlock(
+          [
+            injectDataView(),
+            /*
+              const fieldName = new Classname();
+            */
+            factory.createVariableStatement(
+              undefined,
+              factory.createVariableDeclarationList(
+                [
+                  factory.createVariableDeclaration(
+                    factory.createIdentifier(fieldName),
+                    undefined,
+                    undefined,
+                    factory.createNewExpression(factory.createIdentifier(className), undefined, []),
+                  ),
+                ],
+                ts.NodeFlags.Const,
+              ),
+            ),
+            /*
+              ast.offset => let currentOffset = offset ?? MemoryMapPerbandpowersettings.BASE;
+              !ast.offset => let currentOffset = offset;
+            */
+            createCurrentOffsetVariableStatement(
+              offset != null
+                ? factory.createBinaryExpression(
+                    factory.createIdentifier("offset"),
+                    factory.createToken(ts.SyntaxKind.QuestionQuestionToken),
+                    factory.createPropertyAccessExpression(
+                      factory.createIdentifier(className),
+                      factory.createIdentifier("BASE"),
+                    ),
+                  )
+                : factory.createIdentifier("offset"),
+            ),
+            // decodeStatements
+            ...childrenCodeEmmits.flatMap((ce) => ce.decodeStatements).flatMap((generator) => generator(fieldName)),
+            // return statements
+            factory.createReturnStatement(factory.createIdentifier(fieldName)),
+          ],
+          true,
+        ),
+      ),
+    ].filter((e) => e != null),
   );
 }
