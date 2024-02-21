@@ -1,0 +1,8 @@
+{
+  "esm": true,
+  "compilerOptions": {
+    "module": "nodenext",
+    "inlineSourceMap": true,
+    "inlineSources": true
+  }
+}

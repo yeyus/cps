@@ -1,0 +1,240 @@
+#seekto 0x0008;
+struct {
+  lbcd rxfreq[4];
+  lbcd txfreq[4];
+  ul16 rxtone;
+  ul16 txtone;
+  u8 unused1:3,
+     isuhf:1,
+     scode:4;
+  u8 unknown1:7,
+     txtoneicon:1;
+  u8 mailicon:3,
+     unknown2:3,
+     lowpower:2;
+  u8 unknown3:1,
+     wide:1,
+     unknown4:2,
+     bcl:1,
+     scan:1,
+     pttid:2;
+} memory[128];
+
+#seekto 0x0B08;
+struct {
+  u8 code[5];
+  u8 unused[11];
+} pttid[15];
+
+#seekto 0x0C88;
+struct {
+  u8 code222[3];
+  u8 unused222[2];
+  u8 code333[3];
+  u8 unused333[2];
+  u8 alarmcode[3];
+  u8 unused119[2];
+  u8 unknown1;
+  u8 code555[3];
+  u8 unused555[2];
+  u8 code666[3];
+  u8 unused666[2];
+  u8 code777[3];
+  u8 unused777[2];
+  u8 unknown2;
+  u8 code60606[5];
+  u8 code70707[5];
+  u8 code[5];
+  u8 unused1:6,
+     aniid:2;
+  u8 unknown[2];
+  u8 dtmfon;
+  u8 dtmfoff;
+} ani;
+
+#seekto 0x0E28;
+struct {
+  u8 squelch;
+  u8 step;
+  u8 unknown1;
+  u8 save;
+  u8 vox;
+  u8 unknown2;
+  u8 abr;
+  u8 tdr;
+  u8 beep;
+  u8 timeout;
+  u8 unknown3[4];
+  u8 voice;
+  u8 unknown4;
+  u8 dtmfst;
+  u8 unknown5;
+  u8 unknown12:6,
+     screv:2;
+  u8 pttid;
+  u8 pttlt;
+  u8 mdfa;
+  u8 mdfb;
+  u8 bcl;
+  u8 autolk; // NOTE: The UV-6 calls this byte voxenable, but the UV-5R
+             // calls it autolk. Since this is a minor difference, it will
+             // be referred to by the wrong name for the UV-6.
+  u8 sftd;
+  u8 unknown6[3];
+  u8 wtled;
+  u8 rxled;
+  u8 txled;
+  u8 almod;
+  u8 band;
+  u8 tdrab;
+  u8 ste;
+  u8 rpste;
+  u8 rptrl;
+  u8 ponmsg;
+  u8 roger;
+  u8 rogerrx;
+  u8 tdrch; // NOTE: The UV-82HP calls this byte rtone, but the UV-6
+            // calls it tdrch. Since this is a minor difference, it will
+            // be referred to by the wrong name for the UV-82HP.
+  u8 displayab:1,
+     unknown7:2,
+     fmradio:1,
+     alarm:1,
+     unknown8:1,
+     reset:1,
+     menu:1;
+  u8 unknown9:6,
+     singleptt:1,
+     vfomrlock:1;
+  u8 workmode;
+  u8 keylock;
+} settings;
+
+#seekto 0x0E7E;
+struct {
+  u8 unused1:1,
+     mrcha:7;
+  u8 unused2:1,
+     mrchb:7;
+} wmchannel;
+
+#seekto 0x0F10;
+struct {
+  u8 freq[8];
+  u8 offset[6];
+  ul16 rxtone;
+  ul16 txtone;
+  u8 unused1:7,
+     band:1;
+  u8 unknown3;
+  u8 unused2:2,
+     sftd:2,
+     scode:4;
+  u8 unknown4;
+  u8 unused3:1,
+     step:3,
+     unused4:4;
+  u8 txpower:1,
+     widenarr:1,
+     unknown5:4,
+     txpower3:2;
+} vfoa;
+
+#seekto 0x0F30;
+struct {
+  u8 freq[8];
+  u8 offset[6];
+  ul16 rxtone;
+  ul16 txtone;
+  u8 unused1:7,
+     band:1;
+  u8 unknown3;
+  u8 unused2:2,
+     sftd:2,
+     scode:4;
+  u8 unknown4;
+  u8 unused3:1,
+     step:3,
+     unused4:4;
+  u8 txpower:1,
+     widenarr:1,
+     unknown5:4,
+     txpower3:2;
+} vfob;
+
+#seekto 0x0F56;
+u16 fm_presets;
+
+#seekto 0x1008;
+struct {
+  char name[7];
+  u8 unknown2[9];
+} names[128];
+
+#seekto 0x1818;
+struct {
+  char line1[7];
+  char line2[7];
+} sixpoweron_msg;
+
+#seekto 0x1828;
+struct {
+  char line1[7];
+  char line2[7];
+} poweron_msg;
+
+#seekto 0x1838;
+struct {
+  char line1[7];
+  char line2[7];
+} firmware_msg;
+
+struct squelch {
+  u8 sql0;
+  u8 sql1;
+  u8 sql2;
+  u8 sql3;
+  u8 sql4;
+  u8 sql5;
+  u8 sql6;
+  u8 sql7;
+  u8 sql8;
+  u8 sql9;
+};
+
+#seekto 0x18A8;
+struct {
+  struct squelch vhf;
+  u8 unknown1[6];
+  u8 unknown2[16];
+  struct squelch uhf;
+} squelch_new;
+
+#seekto 0x18E8;
+struct {
+  struct squelch vhf;
+  u8 unknown[6];
+  struct squelch uhf;
+} squelch_old;
+
+struct limit {
+  u8 enable;
+  bbcd lower[2];
+  bbcd upper[2];
+};
+
+#seekto 0x1908;
+struct {
+  struct limit vhf;
+  struct limit uhf;
+} limits_new;
+
+#seekto 0x1910;
+struct {
+  u8 unknown1[2];
+  struct limit vhf;
+  u8 unknown2;
+  u8 unknown3[8];
+  u8 unknown4[2];
+  struct limit uhf;
+} limits_old;
