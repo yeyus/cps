@@ -254,10 +254,6 @@ export class Struct extends StructDefinition {
     this.offset = offset;
   }
 
-  get byteLength(): number {
-    return super.byteLength * this.length;
-  }
-
   toString() {
     return `[Struct name=${this.name} length=${this.length} fields=${this.children} offset=${this.offset}]`;
   }

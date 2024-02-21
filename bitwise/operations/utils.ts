@@ -1,6 +1,9 @@
 import { ASTNode, NodeTypes } from "../ast/base";
 import { DefinitionTable, StructFieldReference } from "../ast/types";
 
+// eslint-disable-next-line no-console
+export const debug = (...args) => process.env.DEBUG && console.log(...args);
+
 export const snakeToCamel = (str: string) =>
   str.toLowerCase().replace(/([-_][a-z])/g, (group) => group.toUpperCase().replace("-", "").replace("_", ""));
 
