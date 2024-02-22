@@ -1,12 +1,12 @@
 import retry from "async-retry";
-import { Transport } from "../../modules/connection-manager/types";
-import { TransferEmitter } from "../../utils/transfer-emitter";
-import { RadioDefinition } from "../radio-config";
+import { Transport } from "../../../../modules/connection-manager/types";
+import { TransferEmitter } from "../../../../utils/transfer-emitter";
+import { RadioDefinition } from "../../../radio-config";
 
-import image from "./images/quanshenk-uvk5-photo.png";
-import { SerialRadio } from "../../modules/radio-types/transports/serial/serial";
-import getLogger from "../../utils/logger";
-import SerialConnection from "../../modules/radio-types/transports/serial/serial-connection";
+import image from "./photo.png";
+import { SerialRadio } from "../../../../modules/radio-types/transports/serial/serial";
+import getLogger from "../../../../utils/logger";
+import SerialConnection from "../../../../modules/radio-types/transports/serial/serial-connection";
 
 const logger = getLogger("QuanshengUVK5");
 
