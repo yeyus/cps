@@ -21,4 +21,13 @@ export default class BitView {
 
     return (n >> bitOffset) & mask;
   }
+
+  public static asString(buffer: Uint8Array, offset: number): string {
+    const n = buffer.at(offset);
+    if (n === undefined) {
+      throw new Error(`Can't parse string value at offset ${offset}`);
+    }
+
+    return String.fromCharCode(n);
+  }
 }
