@@ -9,6 +9,6 @@ export enum Transport {
 export interface BaseRadioInterface {
   transport: Transport;
 
-  downloadCodeplug(emitter?: TransferEmitter): void;
+  downloadCodeplug(emitter?: TransferEmitter): Promise<Uint8Array>;
   uploadCodeplug(emitter?: TransferEmitter): void;
 }

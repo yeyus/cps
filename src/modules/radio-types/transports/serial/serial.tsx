@@ -24,7 +24,7 @@ export abstract class SerialRadio implements BaseRadioInterface {
     this.connection = connection;
   }
 
-  abstract downloadCodeplug(emitter?: TransferEmitter): void;
+  abstract downloadCodeplug(emitter?: TransferEmitter): Promise<Uint8Array>;
 
   abstract uploadCodeplug(emitter?: TransferEmitter): void;
 }
