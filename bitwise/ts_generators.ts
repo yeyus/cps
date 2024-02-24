@@ -242,18 +242,9 @@ const getDataViewDecodeMethod = (byteLength: number, signed: boolean) =>
 function fieldTypeDecodeCallExpression(type: BitwiseType, offsetArgument: ts.Expression): ts.Expression {
   if (type.isASCIIEncoded) {
     return factory.createCallExpression(
-      factory.createPropertyAccessExpression(
-        factory.createIdentifier("String"),
-        factory.createIdentifier("fromCharCode"),
-      ),
+      factory.createPropertyAccessExpression(factory.createIdentifier("BitView"), factory.createIdentifier("asString")),
       undefined,
-      [
-        factory.createCallExpression(
-          factory.createPropertyAccessExpression(factory.createIdentifier("buffer"), factory.createIdentifier("at")),
-          undefined,
-          [offsetArgument],
-        ),
-      ],
+      [factory.createIdentifier("buffer"), offsetArgument],
     );
   }
   if (type.isBCDEncoded) {

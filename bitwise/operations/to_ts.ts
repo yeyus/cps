@@ -228,7 +228,7 @@ const toTS: BitwiseActionDict<any> = {
       factory.createPropertyDeclaration(
         [factory.createToken(ts.SyntaxKind.PublicKeyword)],
         factory.createIdentifier(fieldName),
-        undefined,
+        factory.createToken(ts.SyntaxKind.ExclamationToken),
         isArrayOfStruct
           ? factory.createArrayTypeNode(factory.createTypeReferenceNode(factory.createIdentifier(className), undefined))
           : factory.createTypeReferenceNode(factory.createIdentifier(className), undefined),
@@ -277,11 +277,11 @@ const toTS: BitwiseActionDict<any> = {
       factory.createPropertyDeclaration(
         [factory.createToken(ts.SyntaxKind.PublicKeyword)],
         factory.createIdentifier(fieldName),
-        undefined,
+        isArrayOfStruct ? undefined : factory.createToken(ts.SyntaxKind.ExclamationToken),
         isArrayOfStruct
           ? factory.createArrayTypeNode(factory.createTypeReferenceNode(factory.createIdentifier(className), undefined))
           : factory.createTypeReferenceNode(factory.createIdentifier(className), undefined),
-        undefined,
+        isArrayOfStruct ? factory.createArrayLiteralExpression([], false) : undefined,
       ),
     ];
 
@@ -316,7 +316,7 @@ const toTS: BitwiseActionDict<any> = {
           factory.createPropertyDeclaration(
             [factory.createToken(ts.SyntaxKind.PublicKeyword)],
             factory.createIdentifier(maskName),
-            undefined,
+            factory.createToken(ts.SyntaxKind.ExclamationToken),
             mask.bitLength > 1
               ? factory.createKeywordTypeNode(ts.SyntaxKind.NumberKeyword)
               : factory.createKeywordTypeNode(ts.SyntaxKind.BooleanKeyword),
@@ -338,9 +338,9 @@ const toTS: BitwiseActionDict<any> = {
         factory.createPropertyDeclaration(
           [factory.createToken(ts.SyntaxKind.PublicKeyword)],
           factory.createIdentifier(fieldName),
-          undefined,
+          isFieldArray ? undefined : factory.createToken(ts.SyntaxKind.ExclamationToken),
           isFieldArray ? factory.createArrayTypeNode(typeNode) : typeNode,
-          undefined,
+          isFieldArray ? factory.createArrayLiteralExpression([], false) : undefined,
         ),
       ];
 
