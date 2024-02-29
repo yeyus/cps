@@ -7,6 +7,7 @@ import image from "./photo.png";
 import { SerialRadio } from "../../../../modules/radio-types/transports/serial/serial";
 import getLogger from "../../../../utils/logger";
 import SerialConnection from "../../../../modules/radio-types/transports/serial/serial-connection";
+import { CodeplugReadResponse } from "../../../../modules/radio-types/base";
 
 const logger = getLogger("QuanshengUVK5");
 
@@ -182,7 +183,7 @@ export class QuanshengUVK5 extends SerialRadio {
     await this.sendCommand(COMMAND_RESET);
   }
 
-  async downloadCodeplug(emitter?: TransferEmitter | undefined): Promise<Uint8Array> {
+  async downloadCodeplug(emitter?: TransferEmitter | undefined): Promise<CodeplugReadResponse> {
     const buffer = new Uint8Array(EEPROM_SIZE);
     emitter?.setTotal(EEPROM_SIZE / EEPROM_BLOCK_SIZE);
 
@@ -200,7 +201,7 @@ export class QuanshengUVK5 extends SerialRadio {
     }
 
     emitter?.done();
-    return buffer;
+    return new CodeplugReadResponse(buffer, { firmwareVersion: radioInfo.firmwareVersion });
   }
 
   uploadCodeplug(): void {

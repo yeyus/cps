@@ -1,4 +1,5 @@
 import { Transport } from "../../modules/connection-manager/types";
+import { CodeplugReadResponse } from "../../modules/radio-types/base";
 import { SerialRadio } from "../../modules/radio-types/transports/serial/serial";
 import SerialConnection from "../../modules/radio-types/transports/serial/serial-connection";
 import getLogger from "../../utils/logger";
@@ -37,7 +38,7 @@ export class RaddiodityGD88 extends SerialRadio {
     return this.connection.read(2048, 1000);
   }
 
-  async downloadCodeplug(emitter?: TransferEmitter): Promise<Uint8Array> {
+  async downloadCodeplug(emitter?: TransferEmitter): Promise<CodeplugReadResponse> {
     const buffer = new Uint8Array(128 * 1024);
     emitter?.setTotal(58);
 
@@ -55,7 +56,7 @@ export class RaddiodityGD88 extends SerialRadio {
     }
 
     emitter?.done();
-    return buffer;
+    return new CodeplugReadResponse(buffer);
   }
 
   uploadCodeplug(): void {

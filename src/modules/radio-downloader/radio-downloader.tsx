@@ -3,10 +3,11 @@ import { TransferEmitter } from "../../utils/transfer-emitter";
 import { useConnection } from "../connection-manager/context";
 import { ConnectionStatus } from "../connection-manager/types";
 import { QuanshengUVK5MemoryMap } from "../../configs/radios/quansheng/uvk5/memory-map";
+import { CodeplugReadResponse } from "../radio-types/base";
 
-function SaveToDiskButton({ codeplug }: { codeplug: Uint8Array }) {
+function SaveToDiskButton({ codeplug }: { codeplug: CodeplugReadResponse }) {
   const downloadUrl = React.useMemo(() => {
-    const blob = new Blob([codeplug], { type: "application/octet-stream" });
+    const blob = new Blob([codeplug.memory], { type: "application/octet-stream" });
     return URL.createObjectURL(blob);
   }, [codeplug]);
 
@@ -26,7 +27,7 @@ export default function RadioDownloader() {
   const { state: connection } = useConnection();
   const isConnected = connection.status === ConnectionStatus.CONNECTED && connection.radio !== null;
 
-  const [codeplug, setCodeplug] = React.useState<Uint8Array>();
+  const [codeplug, setCodeplug] = React.useState<CodeplugReadResponse>();
 
   React.useEffect(() => {
     // debug
@@ -52,7 +53,7 @@ export default function RadioDownloader() {
   const handleDecode = () => {
     if (codeplug === undefined) return;
 
-    const memoryMap = QuanshengUVK5MemoryMap.fromBuffer(codeplug);
+    const memoryMap = QuanshengUVK5MemoryMap.fromBuffer(codeplug.memory);
     console.log(`The memory map`, memoryMap);
   };
 
