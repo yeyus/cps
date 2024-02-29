@@ -1,3 +1,5 @@
+/* eslint-disable max-classes-per-file */
+import { Codeplug } from "../../proto/gen/cps/model/v1/codeplug_pb";
 import { TransferEmitter } from "../../utils/transfer-emitter";
 
 export enum Transport {
@@ -28,5 +30,7 @@ export interface BaseRadioInterface {
   transport: Transport;
 
   downloadCodeplug(emitter?: TransferEmitter): Promise<CodeplugReadResponse>;
+  deserializeCodeplug(readResponse: CodeplugReadResponse): Codeplug;
+
   uploadCodeplug(emitter?: TransferEmitter): void;
 }

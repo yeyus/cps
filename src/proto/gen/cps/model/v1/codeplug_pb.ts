@@ -5,7 +5,7 @@
 
 import type { BinaryReadOptions, FieldList, JsonReadOptions, JsonValue, PartialMessage, PlainMessage } from "@bufbuild/protobuf";
 import { Message, proto3, Timestamp } from "@bufbuild/protobuf";
-import { ChannelSlot } from "./channel_pb.js";
+import { ChannelSlot } from "./channel_pb.ts";
 
 /**
  * @generated from enum cps.model.v1.RadioType

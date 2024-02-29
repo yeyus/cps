@@ -1,3 +1,4 @@
+import { Codeplug } from "../../../../proto/gen/cps/model/v1/codeplug_pb";
 import { TransferEmitter } from "../../../../utils/transfer-emitter";
 import { BaseRadioInterface, CodeplugReadResponse, Transport } from "../../base";
 
@@ -25,6 +26,8 @@ export abstract class SerialRadio implements BaseRadioInterface {
   }
 
   abstract downloadCodeplug(emitter?: TransferEmitter): Promise<CodeplugReadResponse>;
+
+  abstract deserializeCodeplug(readResponse: CodeplugReadResponse): Codeplug;
 
   abstract uploadCodeplug(emitter?: TransferEmitter): void;
 }

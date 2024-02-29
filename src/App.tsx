@@ -7,6 +7,8 @@ import { RadioDefinition } from "./configs/radio-config";
 import { Transport } from "./modules/connection-manager/types";
 import RadioDownloader from "./modules/radio-downloader/radio-downloader";
 import { RadioTransports } from "./modules/radio-types/transports";
+import { CodeplugProvider } from "./modules/codeplug-manager/context";
+import CodeplugFileImport from "./modules/codeplug-file-import";
 
 declare global {
   interface Window {
@@ -23,13 +25,34 @@ function App() {
 
   return (
     <ConnectionProvider>
-      <div className="App">
-        <section>
-          <RadioPicker selected={radio} onSelect={handleRadioSelect} />
-          {radio && radio.transport === Transport.SERIAL && <ConnectionWizard radioDefinition={radio} />}
-          <RadioDownloader />
-        </section>
-      </div>
+      <CodeplugProvider>
+        <div className="App">
+          {radio == null && (
+            <section>
+              <h2>Select your radio</h2>
+              <RadioPicker selected={radio} onSelect={handleRadioSelect} />
+            </section>
+          )}
+          {radio != null && (
+            <section>
+              <h2>Import your codeplug</h2>
+
+              <div>
+                <h3>From your radio</h3>
+                {radio && radio.transport === Transport.SERIAL && <ConnectionWizard radioDefinition={radio} />}
+                <RadioDownloader />
+              </div>
+
+              <h3>or</h3>
+
+              <div>
+                <h3>From a raw memory dump</h3>
+                <CodeplugFileImport />
+              </div>
+            </section>
+          )}
+        </div>
+      </CodeplugProvider>
     </ConnectionProvider>
   );
 }

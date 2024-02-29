@@ -8,6 +8,8 @@ import { SerialRadio } from "../../../../modules/radio-types/transports/serial/s
 import getLogger from "../../../../utils/logger";
 import SerialConnection from "../../../../modules/radio-types/transports/serial/serial-connection";
 import { CodeplugReadResponse } from "../../../../modules/radio-types/base";
+import QuanshengUVK5MemorySerializer from "./memory-serializer";
+import { Codeplug } from "../../../../proto/gen/cps/model/v1/codeplug_pb";
 
 const logger = getLogger("QuanshengUVK5");
 
@@ -202,6 +204,11 @@ export class QuanshengUVK5 extends SerialRadio {
 
     emitter?.done();
     return new CodeplugReadResponse(buffer, { firmwareVersion: radioInfo.firmwareVersion });
+  }
+
+  deserializeCodeplug(readResponse: CodeplugReadResponse): Codeplug {
+    const deserializer = new QuanshengUVK5MemorySerializer();
+    return deserializer.deserialize(readResponse);
   }
 
   uploadCodeplug(): void {

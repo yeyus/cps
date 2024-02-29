@@ -2,36 +2,23 @@ import * as React from "react";
 import { TransferEmitter } from "../../utils/transfer-emitter";
 import { useConnection } from "../connection-manager/context";
 import { ConnectionStatus } from "../connection-manager/types";
-import { QuanshengUVK5MemoryMap } from "../../configs/radios/quansheng/uvk5/memory-map";
 import { CodeplugReadResponse } from "../radio-types/base";
-
-function SaveToDiskButton({ codeplug }: { codeplug: CodeplugReadResponse }) {
-  const downloadUrl = React.useMemo(() => {
-    const blob = new Blob([codeplug.memory], { type: "application/octet-stream" });
-    return URL.createObjectURL(blob);
-  }, [codeplug]);
-
-  return (
-    <button type="button" disabled={codeplug == null}>
-      <a download="codeplug.bin" target="_blank" rel="noreferrer" href={downloadUrl}>
-        Save Codeplug
-      </a>
-    </button>
-  );
-}
+import { useCodeplug } from "../codeplug-manager/context";
+import { loadCodeplugAction } from "../codeplug-manager/actions";
+import ExportMemoryButton from "./export-memory-button";
 
 export default function RadioDownloader() {
   const [total, setTotal] = React.useState(0);
   const [current, setCurrent] = React.useState(0);
+  const [codeplugReadResponse, setCodeplugReadResponse] = React.useState<CodeplugReadResponse>();
   const emitterRef = React.useRef<TransferEmitter | undefined>(undefined);
-  const { state: connection } = useConnection();
-  const isConnected = connection.status === ConnectionStatus.CONNECTED && connection.radio !== null;
-
-  const [codeplug, setCodeplug] = React.useState<CodeplugReadResponse>();
+  const { state: connectionStore } = useConnection();
+  const { dispatch } = useCodeplug();
+  const isConnected = connectionStore.status === ConnectionStatus.CONNECTED && connectionStore.radio !== null;
 
   React.useEffect(() => {
     // debug
-    window.DebugCPS = { ...window.DebugCPS, radio: connection.radio };
+    window.DebugCPS = { ...window.DebugCPS, radio: connectionStore.radio };
 
     emitterRef.current = new TransferEmitter();
 
@@ -46,15 +33,13 @@ export default function RadioDownloader() {
   });
 
   const handleDownload = async () => {
-    const bytes = await connection.radio?.downloadCodeplug(emitterRef.current);
-    setCodeplug(bytes);
-  };
+    const readResponse = await connectionStore.radio?.downloadCodeplug(emitterRef.current);
+    setCodeplugReadResponse(readResponse);
+    if (readResponse == null) return;
 
-  const handleDecode = () => {
-    if (codeplug === undefined) return;
-
-    const memoryMap = QuanshengUVK5MemoryMap.fromBuffer(codeplug.memory);
-    console.log(`The memory map`, memoryMap);
+    const codeplug = connectionStore.radio?.deserializeCodeplug(readResponse);
+    if (codeplug == null) return;
+    loadCodeplugAction(dispatch, codeplug);
   };
 
   return (
@@ -62,13 +47,10 @@ export default function RadioDownloader() {
       <button type="button" onClick={handleDownload} disabled={!isConnected}>
         Download Codeplug
       </button>
-      <button type="button" onClick={handleDecode} disabled={codeplug === undefined}>
-        Decode Codeplug
-      </button>
       <span>
         {current}/{total}
       </span>
-      {codeplug != null ? <SaveToDiskButton codeplug={codeplug} /> : null}
+      {codeplugReadResponse != null ? <ExportMemoryButton codeplugReadResponse={codeplugReadResponse} /> : null}
     </>
   );
 }

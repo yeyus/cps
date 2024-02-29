@@ -2,6 +2,7 @@ import { Transport } from "../../modules/connection-manager/types";
 import { CodeplugReadResponse } from "../../modules/radio-types/base";
 import { SerialRadio } from "../../modules/radio-types/transports/serial/serial";
 import SerialConnection from "../../modules/radio-types/transports/serial/serial-connection";
+import { Codeplug } from "../../proto/gen/cps/model/v1/codeplug_pb";
 import getLogger from "../../utils/logger";
 import { TransferEmitter } from "../../utils/transfer-emitter";
 import { RadioDefinition } from "../radio-config";
@@ -57,6 +58,11 @@ export class RaddiodityGD88 extends SerialRadio {
 
     emitter?.done();
     return new CodeplugReadResponse(buffer);
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  deserializeCodeplug(readResponse: CodeplugReadResponse): Codeplug {
+    throw new Error("Method not implemented.");
   }
 
   uploadCodeplug(): void {
