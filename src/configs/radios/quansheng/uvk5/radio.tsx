@@ -203,12 +203,7 @@ export class QuanshengUVK5 extends SerialRadio {
     }
 
     emitter?.done();
-    return new CodeplugReadResponse(buffer, { firmwareVersion: radioInfo.firmwareVersion });
-  }
-
-  deserializeCodeplug(readResponse: CodeplugReadResponse): Codeplug {
-    const deserializer = new QuanshengUVK5MemorySerializer();
-    return deserializer.deserialize(readResponse);
+    return new CodeplugReadResponse(buffer, undefined, { firmwareVersion: radioInfo.firmwareVersion });
   }
 
   uploadCodeplug(): void {
@@ -222,6 +217,10 @@ export const QuanshengUVK5Definition: RadioDefinition<QuanshengUVK5> = {
   image,
   createRadio(connection: SerialConnection) {
     return new QuanshengUVK5(connection);
+  },
+  deserializeCodeplug(readResponse: CodeplugReadResponse): Codeplug {
+    const deserializer = new QuanshengUVK5MemorySerializer();
+    return deserializer.deserialize(readResponse);
   },
   serialOptions: {
     baudRate: 38400,

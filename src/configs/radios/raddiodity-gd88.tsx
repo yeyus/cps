@@ -60,11 +60,6 @@ export class RaddiodityGD88 extends SerialRadio {
     return new CodeplugReadResponse(buffer);
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  deserializeCodeplug(readResponse: CodeplugReadResponse): Codeplug {
-    throw new Error("Method not implemented.");
-  }
-
   uploadCodeplug(): void {
     throw new Error("Method not implemented.");
   }
@@ -80,6 +75,10 @@ export const RaddiodityGD88Definition: RadioDefinition<RaddiodityGD88> = {
     "https://cdn.shopify.com/s/files/1/0011/7220/9721/files/GD-88_8a374432-3d75-49a3-8261-6fa5548492c1_300x.png?v=1659321887",
   createRadio(connection: SerialConnection) {
     return new RaddiodityGD88(connection);
+  },
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  deserializeCodeplug(_readResponse: CodeplugReadResponse): Codeplug {
+    throw new Error("Method not implemented.");
   },
   // Shake: 1, Replace: 40
   //  -> SERIAL_DTR_CONTROL

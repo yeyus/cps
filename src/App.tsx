@@ -20,34 +20,36 @@ declare global {
 window.DebugCPS = window.DebugCPS || {};
 
 function App() {
-  const [radio, setRadio] = React.useState<RadioDefinition<RadioTransports>>();
-  const handleRadioSelect = (selected: RadioDefinition<RadioTransports>) => setRadio(selected);
+  const [radioDefinition, setRadioDefinition] = React.useState<RadioDefinition<RadioTransports>>();
+  const handleRadioSelect = (selected: RadioDefinition<RadioTransports>) => setRadioDefinition(selected);
 
   return (
     <ConnectionProvider>
       <CodeplugProvider>
         <div className="App">
-          {radio == null && (
+          {radioDefinition == null && (
             <section>
               <h2>Select your radio</h2>
-              <RadioPicker selected={radio} onSelect={handleRadioSelect} />
+              <RadioPicker selected={radioDefinition} onSelect={handleRadioSelect} />
             </section>
           )}
-          {radio != null && (
+          {radioDefinition != null && (
             <section>
               <h2>Import your codeplug</h2>
 
               <div>
                 <h3>From your radio</h3>
-                {radio && radio.transport === Transport.SERIAL && <ConnectionWizard radioDefinition={radio} />}
-                <RadioDownloader />
+                {radioDefinition && radioDefinition.transport === Transport.SERIAL && (
+                  <ConnectionWizard radioDefinition={radioDefinition} />
+                )}
+                <RadioDownloader radioDefinition={radioDefinition} />
               </div>
 
               <h3>or</h3>
 
               <div>
                 <h3>From a raw memory dump</h3>
-                <CodeplugFileImport />
+                <CodeplugFileImport radioDefinition={radioDefinition} />
               </div>
             </section>
           )}

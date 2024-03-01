@@ -1,4 +1,5 @@
-import { BaseRadioInterface, Transport } from "../modules/radio-types/base";
+import { BaseRadioInterface, CodeplugReadResponse, Transport } from "../modules/radio-types/base";
+import { Codeplug } from "../proto/gen/cps/model/v1/codeplug_pb";
 
 export type BrandModelRevision = [string, string, number];
 
@@ -9,6 +10,9 @@ export interface RadioDefinition<T extends BaseRadioInterface> {
 
   // get factory(): T;
   createRadio(...args: unknown[]): T;
+
+  // parsers
+  deserializeCodeplug(readResponse: CodeplugReadResponse): Codeplug;
 
   // for serial radios
   serialOptions?: SerialOptions;

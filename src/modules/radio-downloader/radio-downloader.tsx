@@ -6,8 +6,10 @@ import { CodeplugReadResponse } from "../radio-types/base";
 import { useCodeplug } from "../codeplug-manager/context";
 import { loadCodeplugAction } from "../codeplug-manager/actions";
 import ExportMemoryButton from "./export-memory-button";
+import { RadioDefinition } from "../../configs/radio-config";
+import { RadioTransports } from "../radio-types/transports";
 
-export default function RadioDownloader() {
+export default function RadioDownloader({ radioDefinition }: { radioDefinition: RadioDefinition<RadioTransports> }) {
   const [total, setTotal] = React.useState(0);
   const [current, setCurrent] = React.useState(0);
   const [codeplugReadResponse, setCodeplugReadResponse] = React.useState<CodeplugReadResponse>();
@@ -37,7 +39,7 @@ export default function RadioDownloader() {
     setCodeplugReadResponse(readResponse);
     if (readResponse == null) return;
 
-    const codeplug = connectionStore.radio?.deserializeCodeplug(readResponse);
+    const codeplug = radioDefinition.deserializeCodeplug(readResponse);
     if (codeplug == null) return;
     loadCodeplugAction(dispatch, codeplug);
   };
