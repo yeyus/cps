@@ -15,6 +15,7 @@
     "rules": {
         "getter-return": "off",
         "react/require-default-props": "off",
+        "react/jsx-props-no-spreading": "off",
         "import/extensions": [
             "error",
             "ignorePackages",
