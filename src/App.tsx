@@ -7,6 +7,8 @@ import { RadioDefinition } from "./configs/radio-config";
 import { Transport } from "./modules/connection-manager/types";
 import RadioDownloader from "./modules/radio-downloader/radio-downloader";
 import { RadioTransports } from "./modules/radio-types/transports";
+import { CodeplugProvider } from "./modules/codeplug-manager/context";
+import CodeplugFileImport from "./modules/codeplug-file-import";
 
 declare global {
   interface Window {
@@ -18,18 +20,41 @@ declare global {
 window.DebugCPS = window.DebugCPS || {};
 
 function App() {
-  const [radio, setRadio] = React.useState<RadioDefinition<RadioTransports>>();
-  const handleRadioSelect = (selected: RadioDefinition<RadioTransports>) => setRadio(selected);
+  const [radioDefinition, setRadioDefinition] = React.useState<RadioDefinition<RadioTransports>>();
+  const handleRadioSelect = (selected: RadioDefinition<RadioTransports>) => setRadioDefinition(selected);
 
   return (
     <ConnectionProvider>
-      <div className="App">
-        <section>
-          <RadioPicker selected={radio} onSelect={handleRadioSelect} />
-          {radio && radio.transport === Transport.SERIAL && <ConnectionWizard radioDefinition={radio} />}
-          <RadioDownloader />
-        </section>
-      </div>
+      <CodeplugProvider>
+        <div className="App">
+          {radioDefinition == null && (
+            <section>
+              <h2>Select your radio</h2>
+              <RadioPicker selected={radioDefinition} onSelect={handleRadioSelect} />
+            </section>
+          )}
+          {radioDefinition != null && (
+            <section>
+              <h2>Import your codeplug</h2>
+
+              <div>
+                <h3>From your radio</h3>
+                {radioDefinition && radioDefinition.transport === Transport.SERIAL && (
+                  <ConnectionWizard radioDefinition={radioDefinition} />
+                )}
+                <RadioDownloader radioDefinition={radioDefinition} />
+              </div>
+
+              <h3>or</h3>
+
+              <div>
+                <h3>From a raw memory dump</h3>
+                <CodeplugFileImport radioDefinition={radioDefinition} />
+              </div>
+            </section>
+          )}
+        </div>
+      </CodeplugProvider>
     </ConnectionProvider>
   );
 }

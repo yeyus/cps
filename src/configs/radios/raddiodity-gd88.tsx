@@ -1,6 +1,8 @@
 import { Transport } from "../../modules/connection-manager/types";
+import { CodeplugReadResponse } from "../../modules/radio-types/base";
 import { SerialRadio } from "../../modules/radio-types/transports/serial/serial";
 import SerialConnection from "../../modules/radio-types/transports/serial/serial-connection";
+import { Codeplug } from "../../proto/gen/cps/model/v1/codeplug_pb";
 import getLogger from "../../utils/logger";
 import { TransferEmitter } from "../../utils/transfer-emitter";
 import { RadioDefinition } from "../radio-config";
@@ -37,7 +39,7 @@ export class RaddiodityGD88 extends SerialRadio {
     return this.connection.read(2048, 1000);
   }
 
-  async downloadCodeplug(emitter?: TransferEmitter): Promise<Uint8Array> {
+  async downloadCodeplug(emitter?: TransferEmitter): Promise<CodeplugReadResponse> {
     const buffer = new Uint8Array(128 * 1024);
     emitter?.setTotal(58);
 
@@ -55,7 +57,7 @@ export class RaddiodityGD88 extends SerialRadio {
     }
 
     emitter?.done();
-    return buffer;
+    return new CodeplugReadResponse(buffer);
   }
 
   uploadCodeplug(): void {
@@ -73,6 +75,10 @@ export const RaddiodityGD88Definition: RadioDefinition<RaddiodityGD88> = {
     "https://cdn.shopify.com/s/files/1/0011/7220/9721/files/GD-88_8a374432-3d75-49a3-8261-6fa5548492c1_300x.png?v=1659321887",
   createRadio(connection: SerialConnection) {
     return new RaddiodityGD88(connection);
+  },
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  deserializeCodeplug(_readResponse: CodeplugReadResponse): Codeplug {
+    throw new Error("Method not implemented.");
   },
   // Shake: 1, Replace: 40
   //  -> SERIAL_DTR_CONTROL

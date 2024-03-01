@@ -1,0 +1,39 @@
+syntax = "proto3";
+
+package cps.model.v1;
+
+import "google/protobuf/timestamp.proto";
+import "cps/model/v1/channel.proto";
+
+enum RadioType {
+    QUANSHENG_UVK5_V0 = 0;
+}
+
+message RadioIdentification {
+    RadioType definition = 1;
+    string brand = 2;
+    string model = 3;
+    string revision = 4;
+
+    optional string serial_number = 5;
+    optional string firmware_version = 6;
+    optional string hardware_version = 7;
+}
+
+message Codeplug {
+    /* identification section */
+    RadioIdentification radio = 1;
+
+    /* memory section */
+    repeated ChannelSlot channel_slots = 20;
+
+    /* metadata section */
+    optional string name = 40;
+    optional string comment = 100;
+
+    // links this memory to an upstream entity like a repeater definition, PMR channel, etc.
+    optional string parent_entity = 103;
+    optional google.protobuf.Timestamp created_at = 101;
+    optional google.protobuf.Timestamp updated_at = 102;
+    optional google.protobuf.Timestamp deleted_at = 104;
+}

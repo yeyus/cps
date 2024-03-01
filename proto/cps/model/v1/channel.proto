@@ -1,0 +1,62 @@
+syntax = "proto3";
+
+package cps.model.v1;
+
+import "google/protobuf/timestamp.proto";
+
+enum Mode {
+    FM = 0;
+    NFM = 1;
+    WFM = 2;
+
+    AM = 3;
+}
+
+enum ChannelSlotType {
+    MEMORY = 0;
+    VFO = 1;
+}
+
+message ToneSquelch {
+    optional fixed32 ctcss = 1;
+    optional fixed32 dcs = 2;
+    optional bool dcs_reverse_polarity = 3;
+}
+
+message Power {
+    optional uint32 milliwatts = 1;
+    optional string label = 2;
+}
+
+message ChannelSlot {
+    bool is_empty = 1;
+
+    optional ChannelSlotType type = 2;
+    optional Channel channel = 3;
+}
+
+message Channel {
+    // Frequencies are encoded in hertz
+    fixed64 frequency = 2;
+    optional sint64 offset = 3;
+    optional fixed64 step = 4;
+    optional fixed32 bandwidth = 5;
+
+    // Squelch
+    optional ToneSquelch rx_tone = 10;
+    optional ToneSquelch tx_tone = 11;
+
+    optional Mode mode = 20;
+
+    optional string name = 40;
+
+    optional Power power = 60;
+
+    /* metadata section */
+    optional string comment = 100;
+
+    // links this memory to an upstream entity like a repeater definition, PMR channel, etc.
+    optional string parent_entity = 103;
+    optional google.protobuf.Timestamp created_at = 101;
+    optional google.protobuf.Timestamp updated_at = 102;
+}

@@ -6,6 +6,7 @@
       "dom.iterable",
       "esnext"
     ],
+    "types": ["react/canary", "react-dom/canary", "w3c-web-serial", "node", "jest"],
     "allowJs": true,
     "skipLibCheck": true,
     "esModuleInterop": true,

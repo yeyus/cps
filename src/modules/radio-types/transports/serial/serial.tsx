@@ -1,5 +1,5 @@
 import { TransferEmitter } from "../../../../utils/transfer-emitter";
-import { BaseRadioInterface, Transport } from "../../base";
+import { BaseRadioInterface, CodeplugReadResponse, Transport } from "../../base";
 
 export declare interface SerialConnectionInterface {
   index: number;
@@ -24,7 +24,7 @@ export abstract class SerialRadio implements BaseRadioInterface {
     this.connection = connection;
   }
 
-  abstract downloadCodeplug(emitter?: TransferEmitter): Promise<Uint8Array>;
+  abstract downloadCodeplug(emitter?: TransferEmitter): Promise<CodeplugReadResponse>;
 
   abstract uploadCodeplug(emitter?: TransferEmitter): void;
 }
