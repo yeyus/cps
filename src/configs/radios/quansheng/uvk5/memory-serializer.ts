@@ -87,11 +87,11 @@ export default class QuanshengUVK5MemorySerializer implements MemorySerializer {
       // determine if channel is empty
       if (memoryMap.channelAttributes[i].isFree) {
         channelSlots.push(new ChannelSlot({ type: ChannelSlotType.MEMORY, isEmpty: true }));
+      } else {
+        const channelSlot = new ChannelSlot({ type: ChannelSlotType.MEMORY, isEmpty: false });
+        channelSlot.channel = this.deserializeChannel(channel, memoryMap.channelname[i].name.join(""));
+        channelSlots.push(channelSlot);
       }
-
-      const channelSlot = new ChannelSlot({ type: ChannelSlotType.MEMORY, isEmpty: false });
-      channelSlot.channel = this.deserializeChannel(channel, memoryMap.channelname[i].name.join(""));
-      channelSlots.push(channelSlot);
     }
 
     // vfo channels - vfoA and vfoB per each of the 7 bands
@@ -140,7 +140,7 @@ export default class QuanshengUVK5MemorySerializer implements MemorySerializer {
       return new ToneSquelch({ dcs: DCS_LOOKUP_TABLE[code], dcsReversePolarity: true });
     }
 
-    throw new Error("Unknown tone squelch");
+    throw new Error(`Unknown tone squelch => codeflag=${codeflag} code=${code}`);
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
