@@ -4,4 +4,5 @@
   background: var(--color-background);
   color: var(--color-text-normal);
   text-align: center;
+  min-height: 100vh;
 }
