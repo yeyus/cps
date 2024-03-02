@@ -1,0 +1,7 @@
+.App {
+  padding: 0;
+  margin: 0;
+  background: var(--color-background);
+  color: var(--color-text-normal);
+  text-align: center;
+}

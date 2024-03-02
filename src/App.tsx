@@ -1,6 +1,7 @@
 import * as React from "react";
+import classNames from "classnames";
 import { ConnectionProvider } from "./modules/connection-manager/context";
-import "./App.css";
+import "./styles/colors.css";
 import ConnectionWizard from "./modules/connection-manager/serial/connection-wizard";
 import RadioPicker from "./modules/radio-picker/radio-picker";
 import { RadioDefinition } from "./configs/radio-config";
@@ -9,6 +10,9 @@ import RadioDownloader from "./modules/radio-downloader/radio-downloader";
 import { RadioTransports } from "./modules/radio-types/transports";
 import { CodeplugProvider } from "./modules/codeplug-manager/context";
 import CodeplugFileImport from "./modules/codeplug-file-import";
+import ChannelGridWrapper from "./modules/channel-grid";
+
+import styles from "./App.module.css";
 
 declare global {
   interface Window {
@@ -26,7 +30,7 @@ function App() {
   return (
     <ConnectionProvider>
       <CodeplugProvider>
-        <div className="App">
+        <div className={classNames(styles.App, "theme-light")}>
           {radioDefinition == null && (
             <section>
               <h2>Select your radio</h2>
@@ -53,6 +57,7 @@ function App() {
               </div>
             </section>
           )}
+          <ChannelGridWrapper />
         </div>
       </CodeplugProvider>
     </ConnectionProvider>
