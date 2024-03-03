@@ -12,6 +12,21 @@
         "prettier",
         "@typescript-eslint"
     ],
+    "settings": {
+        "import/resolver": {
+            "alias": {
+                "map": [
+                    ["@", "./src"],
+                    ["@stores", "./src/stores"],
+                    ["@modules", "./src/modules"],
+                    ["@proto", "./src/proto"],
+                    ["@utils", "./src/utils"],
+                    ["@configs", "./src/configs"]
+                ],
+                "extensions": [".js", ".ts", ".tsx", ".jsx"]
+            }
+        }
+    },
     "rules": {
         "getter-return": "off",
         "react/require-default-props": "off",
