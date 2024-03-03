@@ -1,5 +1,5 @@
 import * as React from "react";
-import { useCodeplug } from "../codeplug-manager/context";
+import { useCodeplug } from "../../stores/codeplug/context";
 import ChannelGridTable from "./table";
 
 export default function ChannelGridWrapper() {

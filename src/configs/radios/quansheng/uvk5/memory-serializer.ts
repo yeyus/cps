@@ -1,14 +1,7 @@
 import { Timestamp } from "@bufbuild/protobuf";
-import { CodeplugReadResponse } from "../../../../modules/radio-types/base";
-import {
-  Channel,
-  ChannelSlot,
-  ChannelSlotType,
-  Mode,
-  Power,
-  ToneSquelch,
-} from "../../../../proto/gen/cps/model/v1/channel_pb";
-import { Codeplug, RadioIdentification, RadioType } from "../../../../proto/gen/cps/model/v1/codeplug_pb";
+import { CodeplugReadResponse } from "@modules/radio-types/base";
+import { Channel, ChannelSlot, ChannelSlotType, Mode, Power, ToneSquelch } from "@/proto/gen/cps/model/v1/channel_pb";
+import { Codeplug, RadioIdentification, RadioType } from "@/proto/gen/cps/model/v1/codeplug_pb";
 import { MemorySerializer } from "../../../memory-serializer";
 import { MemoryMapChannel, QuanshengUVK5MemoryMap } from "./memory-map";
 

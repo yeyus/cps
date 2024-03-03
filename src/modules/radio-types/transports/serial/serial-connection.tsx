@@ -1,5 +1,5 @@
 import events from "events";
-import getLogger from "../../../../utils/logger";
+import getLogger from "@utils/logger";
 import { SerialConnectionInterface } from "./serial";
 import { Transport } from "../../base";
 

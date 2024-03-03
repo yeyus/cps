@@ -1,10 +1,9 @@
-import { Transport } from "../../modules/connection-manager/types";
-import { CodeplugReadResponse } from "../../modules/radio-types/base";
-import { SerialRadio } from "../../modules/radio-types/transports/serial/serial";
-import SerialConnection from "../../modules/radio-types/transports/serial/serial-connection";
-import { Codeplug } from "../../proto/gen/cps/model/v1/codeplug_pb";
-import getLogger from "../../utils/logger";
-import { TransferEmitter } from "../../utils/transfer-emitter";
+import { CodeplugReadResponse, Transport } from "@modules/radio-types/base";
+import { SerialRadio } from "@modules/radio-types/transports/serial/serial";
+import SerialConnection from "@modules/radio-types/transports/serial/serial-connection";
+import getLogger from "@utils/logger";
+import { TransferEmitter } from "@utils/transfer-emitter";
+import { Codeplug } from "@/proto/gen/cps/model/v1/codeplug_pb";
 import { RadioDefinition } from "../radio-config";
 
 const logger = getLogger("RaddiodityGD88");

@@ -1,16 +1,16 @@
 import * as React from "react";
 import classNames from "classnames";
-import { ConnectionProvider } from "./modules/connection-manager/context";
+import { ConnectionProvider } from "@stores/connection/context";
 import "./styles/colors.css";
-import ConnectionWizard from "./modules/connection-manager/serial/connection-wizard";
-import RadioPicker from "./modules/radio-picker/radio-picker";
-import { RadioDefinition } from "./configs/radio-config";
-import { Transport } from "./modules/connection-manager/types";
-import RadioDownloader from "./modules/radio-downloader/radio-downloader";
-import { RadioTransports } from "./modules/radio-types/transports";
-import { CodeplugProvider } from "./modules/codeplug-manager/context";
-import CodeplugFileImport from "./modules/codeplug-file-import";
-import ChannelGridWrapper from "./modules/channel-grid";
+import ConnectionWizard from "@stores/connection/serial/connection-wizard";
+import RadioPicker from "@modules/radio-picker/radio-picker";
+import { RadioDefinition } from "@configs/radio-config";
+import { Transport } from "@stores/connection/types";
+import RadioDownloader from "@modules/radio-downloader/radio-downloader";
+import { RadioTransports } from "@modules/radio-types/transports";
+import { CodeplugProvider } from "@stores/codeplug/context";
+import CodeplugFileImport from "@modules/codeplug-file-import";
+import ChannelGridWrapper from "@modules/channel-grid";
 
 import styles from "./App.module.css";
 

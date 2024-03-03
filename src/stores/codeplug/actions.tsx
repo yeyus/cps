@@ -1,7 +1,9 @@
 import React from "react";
+
+import { Codeplug } from "@/proto/gen/cps/model/v1/codeplug_pb";
+import getLogger from "@utils/logger";
+
 import { CodeplugAction } from "./types";
-import { Codeplug } from "../../proto/gen/cps/model/v1/codeplug_pb";
-import getLogger from "../../utils/logger";
 
 const logger = getLogger("CodeplugAction");
 

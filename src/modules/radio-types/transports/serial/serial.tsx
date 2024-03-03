@@ -1,4 +1,4 @@
-import { TransferEmitter } from "../../../../utils/transfer-emitter";
+import { TransferEmitter } from "@utils/transfer-emitter";
 import { BaseRadioInterface, CodeplugReadResponse, Transport } from "../../base";
 
 export declare interface SerialConnectionInterface {

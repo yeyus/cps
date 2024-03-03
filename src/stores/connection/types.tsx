@@ -1,4 +1,4 @@
-import { BaseRadioInterface, Transport } from "../radio-types/base";
+import { BaseRadioInterface, Transport } from "@modules/radio-types/base";
 
 export type ConnectionAction =
   | { type: "CONNECTION_OPEN"; radio: BaseRadioInterface }

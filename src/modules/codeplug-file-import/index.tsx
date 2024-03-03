@@ -1,10 +1,12 @@
 import * as React from "react";
 import * as ReactDOM from "react-dom";
-import { CodeplugReadResponse } from "../radio-types/base";
-import { RadioDefinition } from "../../configs/radio-config";
+
+import { RadioDefinition } from "@configs/radio-config";
+import { loadCodeplugAction } from "@stores/codeplug/actions";
+import { useCodeplug } from "@stores/codeplug/context";
+
 import { RadioTransports } from "../radio-types/transports";
-import { loadCodeplugAction } from "../codeplug-manager/actions";
-import { useCodeplug } from "../codeplug-manager/context";
+import { CodeplugReadResponse } from "../radio-types/base";
 
 interface FormState {
   error?: string;
