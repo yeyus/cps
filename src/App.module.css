@@ -6,3 +6,12 @@
   text-align: center;
   min-height: 100vh;
 }
+
+.header {
+  position: sticky;
+  top: 0;
+  height: 60px;
+  background-color: var(--color-nav-elements-header-bg);
+  backdrop-filter: blur(8px);
+  z-index: var(--zindex-main-layout);
+}

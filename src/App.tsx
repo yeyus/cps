@@ -1,17 +1,24 @@
 import * as React from "react";
 import classNames from "classnames";
+
 import { ConnectionProvider } from "@stores/connection/context";
-import "./styles/colors.css";
 import ConnectionWizard from "@stores/connection/serial/connection-wizard";
+import { CodeplugProvider } from "@stores/codeplug/context";
+import { useTheme } from "@stores/theme";
+
+import { Transport } from "@stores/connection/types";
+
 import RadioPicker from "@modules/radio-picker/radio-picker";
 import { RadioDefinition } from "@configs/radio-config";
-import { Transport } from "@stores/connection/types";
 import RadioDownloader from "@modules/radio-downloader/radio-downloader";
 import { RadioTransports } from "@modules/radio-types/transports";
-import { CodeplugProvider } from "@stores/codeplug/context";
+import ThemeSwitcher from "@modules/theme-switcher";
+
 import CodeplugFileImport from "@modules/codeplug-file-import";
 import ChannelGridWrapper from "@modules/channel-grid";
 
+import "./styles/zindex.css";
+import "./styles/colors.css";
 import styles from "./App.module.css";
 
 declare global {
@@ -24,13 +31,17 @@ declare global {
 window.DebugCPS = window.DebugCPS || {};
 
 function App() {
+  const theme = useTheme();
   const [radioDefinition, setRadioDefinition] = React.useState<RadioDefinition<RadioTransports>>();
   const handleRadioSelect = (selected: RadioDefinition<RadioTransports>) => setRadioDefinition(selected);
 
   return (
     <ConnectionProvider>
       <CodeplugProvider>
-        <div className={classNames(styles.App, "theme-light")}>
+        <div className={classNames(styles.App, { "theme-light": theme === "light", "theme-dark": theme === "dark" })}>
+          <header className={styles.header}>
+            <ThemeSwitcher />
+          </header>
           {radioDefinition == null && (
             <section>
               <h2>Select your radio</h2>

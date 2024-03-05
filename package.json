@@ -6,6 +6,7 @@
     "@bufbuild/buf": "^1.29.0",
     "@bufbuild/protobuf": "^1.7.2",
     "@bufbuild/protoc-gen-es": "^1.7.2",
+    "@headlessui/react": "^1.7.18",
     "@tanstack/react-table": "^8.13.2",
     "@testing-library/jest-dom": "^6.2.0",
     "@testing-library/react": "^14.1.2",
@@ -24,7 +25,9 @@
     "web-vitals": "^3.5.1"
   },
   "overrides": {
-    "typescript": "^5.3.3"
+    "typescript": "^5.3.3",
+    "react": "^18.3.0-canary-01ab35a9a-20240228",
+    "react-dom": "^18.3.0-canary-01ab35a9a-20240228"
   },
   "scripts": {
     "start": "craco start",

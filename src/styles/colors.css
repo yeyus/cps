@@ -10,6 +10,7 @@
     /* https://colorkit.co/gradient-palette/edf2f4-2b2d42/?steps=10 */
     --color-base-ramp-e00: var(--color-anti-flash-white);
     --color-base-ramp-d00: #d6dadf;
+    --color-base-ramp-d00-rgb: 214, 218, 223;
     --color-base-ramp-c00: #c0c5cb;
     --color-base-ramp-b00: #abafb7;
     --color-base-ramp-a00: #9699a4;
@@ -20,6 +21,7 @@
     /* https://colorkit.co/gradient-palette/2b2d42-08080c/ */
     --color-base-ramp-500: var(--color-space-cadet);
     --color-base-ramp-400: #222334;
+    --color-base-ramp-400-rgb: 34, 35, 52;
     --color-base-ramp-300: #191a27;
     --color-base-ramp-200: #111119;
     --color-base-ramp-100: var(--color-black);
@@ -57,6 +59,12 @@
 
 .theme-light {
     --color-background: var(--color-base-ramp-e00);
+    --color-nav-elements-bg: var(--color-base-ramp-d00);
+    --color-nav-elements-header-bg: rgba(var(--color-base-ramp-d00-rgb), 0.5);
+
+    --color-table-border: var(--color-base-ramp-a00);
+    --color-table-header: var(--color-base-ramp-c00);
+    --color-table-row-hover: var(--color-asparagus-ramp-d00);
 
     --color-text-normal: var(--color-base-ramp-200);
     --color-text-muted: var(--color-base-ramp-600);
@@ -64,7 +72,13 @@
 }
 
 .theme-dark {
-    --color-background: var(--color-base-ramp-e00);
+    --color-background: var(--color-base-ramp-100);
+    --color-nav-elements-bg: var(--color-base-ramp-400);
+    --color-nav-elements-header-bg: rgba(var(--color-base-ramp-400-rgb), 0.5);
+
+    --color-table-border: var(--color-base-ramp-800);
+    --color-table-header: var(--color-base-ramp-300);
+    --color-table-row-hover: var(--color-asparagus-ramp-300);
 
     --color-text-normal: var(--color-base-ramp-b00);
     --color-text-muted: var(--color-base-ramp-800);

@@ -1,0 +1,5 @@
+:root {
+    --zindex-base: 1;
+    --zindex-main-layout: 100;
+    --zindex-modals: 200;
+}
