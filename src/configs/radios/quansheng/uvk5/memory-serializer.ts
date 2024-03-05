@@ -52,6 +52,16 @@ const BANDS_LOOKUP_TABLE = [
   "BAND 7 470Mhz-600Mhz VFO B",
 ];
 
+function parseName(chars: string[]): string {
+  let parsed = "";
+  for (let i = 0; i < chars.length; i += 1) {
+    if (chars[i].charCodeAt(0) < 0x20 || chars[i].charCodeAt(0) > 0x7f) return parsed;
+    parsed += chars[i];
+  }
+
+  return parsed;
+}
+
 export default class QuanshengUVK5MemorySerializer implements MemorySerializer {
   deserialize(codeplugRead: CodeplugReadResponse): Codeplug {
     const memoryMap = QuanshengUVK5MemoryMap.fromBuffer(codeplugRead.memory);
@@ -82,7 +92,7 @@ export default class QuanshengUVK5MemorySerializer implements MemorySerializer {
         channelSlots.push(new ChannelSlot({ type: ChannelSlotType.MEMORY, isEmpty: true }));
       } else {
         const channelSlot = new ChannelSlot({ type: ChannelSlotType.MEMORY, isEmpty: false });
-        channelSlot.channel = this.deserializeChannel(channel, memoryMap.channelname[i].name.join(""));
+        channelSlot.channel = this.deserializeChannel(channel, parseName(memoryMap.channelname[i].name));
         channelSlots.push(channelSlot);
       }
     }
