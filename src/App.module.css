@@ -11,11 +11,14 @@
   position: sticky;
   top: 0;
   height: 60px;
+  width: 100%;
   background-color: var(--color-nav-elements-header-bg);
   backdrop-filter: blur(8px);
   z-index: var(--zindex-main-layout);
 }
 
 .themeSwitcher {
+  position: absolute;
   margin-top: 14px;
+  right: 80px;
 }
