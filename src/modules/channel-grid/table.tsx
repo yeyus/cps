@@ -47,6 +47,17 @@ const columns = [
       tdClassName: styles.cellAlignCenter,
     },
   }),
+  columnHelper.accessor("channel.power", {
+    header: "Power",
+    cell: (props) => {
+      const power = props.getValue();
+      if (power != null) {
+        return `${props.getValue()?.label} (${props.getValue()?.milliwatts}mW)`;
+      }
+
+      return null;
+    },
+  }),
   columnHelper.accessor("channel.frequency", {
     header: "Frequency",
     cell: (props) => (!props.row.original.isEmpty ? props.getValue().toString(10) : null),
@@ -58,6 +69,38 @@ const columns = [
   columnHelper.accessor("channel.step", {
     header: "Step",
     cell: (props) => (!props.row.original.isEmpty ? props.getValue()?.toString(10) : null),
+  }),
+  columnHelper.accessor("channel.rxTone", {
+    header: "Rx Tone",
+    cell: (props) => {
+      const toneSquelch = props.getValue();
+      if (toneSquelch != null) {
+        if (toneSquelch.ctcss != null) {
+          return `CTCCS (${toneSquelch.ctcss / 10}Hz)`;
+        }
+        if (toneSquelch.dcs != null) {
+          return `DCS (${toneSquelch.dcs})`;
+        }
+      }
+
+      return null;
+    },
+  }),
+  columnHelper.accessor("channel.txTone", {
+    header: "Tx Tone",
+    cell: (props) => {
+      const toneSquelch = props.getValue();
+      if (toneSquelch != null) {
+        if (toneSquelch.ctcss != null) {
+          return `CTCCS (${toneSquelch.ctcss / 10}Hz)`;
+        }
+        if (toneSquelch.dcs != null) {
+          return `DCS ${toneSquelch.dcsReversePolarity ? "Reverse" : ""} (${toneSquelch.dcs})`;
+        }
+      }
+
+      return null;
+    },
   }),
   columnHelper.accessor("channel.comment", {
     header: "Comment",
