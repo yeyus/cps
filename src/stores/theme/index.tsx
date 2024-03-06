@@ -35,6 +35,10 @@ function themeReducer(state: ThemeState, action: ThemeAction): ThemeState {
   return state;
 }
 
+export const themeSwitch = (dispatch: React.Dispatch<ThemeAction>, theme: Theme): void => {
+  dispatch({ type: "THEME_SWITCH", theme });
+};
+
 export function ThemeProvider({ children }: ThemeProviderProps) {
   const [state, dispatch] = React.useReducer(themeReducer, INITIAL_STATE);
 

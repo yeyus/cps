@@ -20,6 +20,7 @@
     "classnames": "^2.5.1",
     "react": "^18.3.0-canary-01ab35a9a-20240228",
     "react-dom": "^18.3.0-canary-01ab35a9a-20240228",
+    "react-icons": "^5.0.1",
     "react-scripts": "5.0.1",
     "typescript": "^5.3.3",
     "web-vitals": "^3.5.1"

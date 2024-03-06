@@ -15,3 +15,7 @@
   backdrop-filter: blur(8px);
   z-index: var(--zindex-main-layout);
 }
+
+.themeSwitcher {
+  margin-top: 14px;
+}

@@ -17,6 +17,7 @@ import ThemeSwitcher from "@modules/theme-switcher";
 import CodeplugFileImport from "@modules/codeplug-file-import";
 import ChannelGridWrapper from "@modules/channel-grid";
 
+import "./styles/accessibility.css";
 import "./styles/zindex.css";
 import "./styles/colors.css";
 import styles from "./App.module.css";
@@ -40,7 +41,7 @@ function App() {
       <CodeplugProvider>
         <div className={classNames(styles.App, { "theme-light": theme === "light", "theme-dark": theme === "dark" })}>
           <header className={styles.header}>
-            <ThemeSwitcher />
+            <ThemeSwitcher className={styles.themeSwitcher} />
           </header>
           {radioDefinition == null && (
             <section>

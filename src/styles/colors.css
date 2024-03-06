@@ -12,6 +12,7 @@
     --color-base-ramp-d00: #d6dadf;
     --color-base-ramp-d00-rgb: 214, 218, 223;
     --color-base-ramp-c00: #c0c5cb;
+    --color-base-ramp-c00-rgb: 192, 197, 203;
     --color-base-ramp-b00: #abafb7;
     --color-base-ramp-a00: #9699a4;
     --color-base-ramp-900: #808490;
@@ -59,8 +60,9 @@
 
 .theme-light {
     --color-background: var(--color-base-ramp-e00);
-    --color-nav-elements-bg: var(--color-base-ramp-d00);
-    --color-nav-elements-header-bg: rgba(var(--color-base-ramp-d00-rgb), 0.5);
+    --color-nav-elements-bg: var(--color-base-ramp-c00);
+    --color-nav-elements-header-bg: rgba(var(--color-base-ramp-c00-rgb), 0.5);
+    --color-control: var(--color-base-ramp-c00);
 
     --color-table-border: var(--color-base-ramp-a00);
     --color-table-header: var(--color-base-ramp-c00);
@@ -75,6 +77,7 @@
     --color-background: var(--color-base-ramp-100);
     --color-nav-elements-bg: var(--color-base-ramp-400);
     --color-nav-elements-header-bg: rgba(var(--color-base-ramp-400-rgb), 0.5);
+    --color-control: var(--color-base-ramp-500);
 
     --color-table-border: var(--color-base-ramp-800);
     --color-table-header: var(--color-base-ramp-300);
