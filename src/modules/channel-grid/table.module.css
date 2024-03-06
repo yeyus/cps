@@ -8,19 +8,27 @@
 }
 
 .tableHeader {
+    top: 60px;
+    position: sticky;
     background-color: var(--color-table-header);
+    text-transform: uppercase;
 }
 
 .tableHeaderCell {
     padding: 6px;
+    border-bottom: 1px solid var(--color-table-border);
+    border-right: 1px solid var(--color-table-border);
 }
 
 .tableCell {
     padding: 3px 6px;
+    vertical-align: middle;
+    border-bottom: 1px solid var(--color-table-border-muted);
+    border-right: 1px solid var(--color-table-border-muted);
 }
 
 .emptyChannelSlow {
-    background-color: gray;
+    background-color: var(--color-table-row-disabled);
 }
 
 .tableRow:hover {
@@ -36,12 +44,13 @@
 }
 
 .cellAlignRight {
-    text-align: center;
+    text-align: right;
 }
 
 .columnRecordNumber {
     color: var(--color-text-muted);
-    font-size: 12px;
-    font-weight: 600;
+    font-family: monospace;
+    font-size: 1.2em;
+    font-weight: 800;
     font-variant-numeric: tabular-nums;
 }

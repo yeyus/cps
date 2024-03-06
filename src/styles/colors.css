@@ -56,6 +56,17 @@
     --color-asparagus-ramp-300: #24351C;
     --color-asparagus-ramp-200: #121B0E;
     --color-asparagus-ramp-100: #090D07;
+
+    --color-mode-am: var(--color-crimson-ramp-900);
+    --color-mode-fm: var(--color-asparagus-ramp-800);
+    --color-mode-usb: #564592;
+    --color-mode-lsb: #8474BE;
+    --color-mode-dmr: #CC3F0C;
+    --color-mode-p25: #577399;
+    --color-mode-dstar: #2B59C3;
+    --color-mode-c4fm: #686963;
+    --color-mode-m17: #48ACF0;
+    --color-mode-nxdn: #F1D302;
 }
 
 .theme-light {
@@ -65,8 +76,10 @@
     --color-control: var(--color-base-ramp-c00);
 
     --color-table-border: var(--color-base-ramp-a00);
+    --color-table-border-muted: var(--color-base-ramp-d00);
     --color-table-header: var(--color-base-ramp-c00);
     --color-table-row-hover: var(--color-asparagus-ramp-d00);
+    --color-table-row-disabled: var(--color-base-ramp-d00);
 
     --color-text-normal: var(--color-base-ramp-200);
     --color-text-muted: var(--color-base-ramp-600);
@@ -80,8 +93,10 @@
     --color-control: var(--color-base-ramp-500);
 
     --color-table-border: var(--color-base-ramp-800);
+    --color-table-border-muted: var(--color-base-ramp-500);
     --color-table-header: var(--color-base-ramp-300);
     --color-table-row-hover: var(--color-asparagus-ramp-300);
+    --color-table-row-disabled: var(--color-base-ramp-400);
 
     --color-text-normal: var(--color-base-ramp-b00);
     --color-text-muted: var(--color-base-ramp-800);

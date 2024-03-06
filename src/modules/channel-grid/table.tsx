@@ -1,9 +1,19 @@
 import * as React from "react";
-import { createColumnHelper, flexRender, getCoreRowModel, useReactTable } from "@tanstack/react-table";
+import { RowData, createColumnHelper, flexRender, getCoreRowModel, useReactTable } from "@tanstack/react-table";
 import classNames from "classnames";
 import { ChannelSlot } from "../../proto/gen/cps/model/v1/channel_pb";
 
 import styles from "./table.module.css";
+import SlotTypeCell from "./slot-type-cell";
+import ChannelModeCell from "./channel-mode-cell";
+
+declare module "@tanstack/react-table" {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  interface ColumnMeta<TData extends RowData, TValue> {
+    thClassName?: string;
+    tdClassName?: string;
+  }
+}
 
 const columnHelper = createColumnHelper<ChannelSlot>();
 
@@ -17,13 +27,25 @@ const columns = [
       </div>
     ),
   }),
+  columnHelper.accessor("type", {
+    header: "Type",
+    cell: SlotTypeCell,
+    meta: {
+      thClassName: styles.cellAlignCenter,
+      tdClassName: styles.cellAlignCenter,
+    },
+  }),
   columnHelper.accessor("channel.name", {
     header: "Name",
     cell: (name) => name.getValue(),
   }),
   columnHelper.accessor("channel.mode", {
     header: "Mode",
-    cell: (props) => props.getValue()?.toString(),
+    cell: ChannelModeCell,
+    meta: {
+      thClassName: styles.cellAlignCenter,
+      tdClassName: styles.cellAlignCenter,
+    },
   }),
   columnHelper.accessor("channel.frequency", {
     header: "Frequency",
@@ -52,7 +74,10 @@ export default function ChannelGridTable({ channelSlots }: { channelSlots: Chann
         {table.getHeaderGroups().map((headerGroup) => (
           <tr key={headerGroup.id}>
             {headerGroup.headers.map((header) => (
-              <th key={headerGroup.id} className={styles.tableHeaderCell}>
+              <th
+                key={headerGroup.id}
+                className={classNames(styles.tableHeaderCell, header.column.columnDef.meta?.thClassName)}
+              >
                 {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
               </th>
             ))}
@@ -63,7 +88,7 @@ export default function ChannelGridTable({ channelSlots }: { channelSlots: Chann
         {table.getRowModel().rows.map((row) => (
           <tr key={row.id} className={classNames(styles.tableRow, { [styles.emptyChannelSlow]: row.original.isEmpty })}>
             {row.getVisibleCells().map((cell) => (
-              <td key={cell.id} className={styles.tableCell}>
+              <td key={cell.id} className={classNames(styles.tableCell, cell.column.columnDef.meta?.tdClassName)}>
                 {flexRender(cell.column.columnDef.cell, cell.getContext())}
               </td>
             ))}

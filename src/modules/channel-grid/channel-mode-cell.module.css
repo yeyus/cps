@@ -1,0 +1,49 @@
+.modeAM {
+    background-color: var(--color-mode-am);
+    color: var(--color-base-ramp-e00);
+}
+
+.modeFM {
+    background-color: var(--color-mode-fm);
+    color: var(--color-base-ramp-e00);
+}
+
+.modeUSB {
+    background-color: var(--color-mode-usb);
+    color: var(--color-base-ramp-e00);
+}
+
+.modeLSB {
+    background-color: var(--color-mode-lsb);
+    color: var(--color-base-ramp-e00);
+}
+
+.modeDMR {
+    background-color: var(--color-mode-dmr);
+    color: var(--color-base-ramp-e00);
+}
+
+.modeP25 {
+    background-color: var(--color-mode-p25);
+    color: var(--color-base-ramp-e00);
+}
+
+.modeDSTAR {
+    background-color: var(--color-mode-dstar);
+    color: var(--color-base-ramp-e00);
+}
+
+.modeC4FM {
+    background-color: var(--color-mode-c4fm);
+    color: var(--color-base-ramp-e00);
+}
+
+.modeM17 {
+    background-color: var(--color-mode-m17);
+    color: var(--color-base-ramp-100);
+}
+
+.modeNXDN {
+    background-color: var(--color-mode-nxdn);
+    color: var(--color-base-ramp-100);
+}

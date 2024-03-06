@@ -17,13 +17,11 @@ export default function ThemeSwitcher({ className }: { className?: string }) {
   };
 
   return (
-    <div>
-      <Switch checked={isLight} onChange={handleClick} className={classNames(className, styles.switcher)}>
-        <span className="sr-only">Toggle to {isLight ? "dark" : "light"} theme</span>
-        <span className={classNames({ [styles.checked]: isLight, [styles.unchecked]: !isLight }, styles.thumb)}>
-          {isLight ? <HiOutlineSun size="24" color="black" /> : <HiMoon size="24" color="yellow" />}
-        </span>
-      </Switch>
-    </div>
+    <Switch checked={isLight} onChange={handleClick} className={classNames(className, styles.switcher)}>
+      <span className="sr-only">Toggle to {isLight ? "dark" : "light"} theme</span>
+      <span className={classNames({ [styles.checked]: isLight, [styles.unchecked]: !isLight }, styles.thumb)}>
+        {isLight ? <HiOutlineSun size="24" color="black" /> : <HiMoon size="24" color="yellow" />}
+      </span>
+    </Switch>
   );
 }
