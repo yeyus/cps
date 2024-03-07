@@ -6,6 +6,9 @@ import { ChannelSlot } from "../../proto/gen/cps/model/v1/channel_pb";
 import styles from "./table.module.css";
 import SlotTypeCell from "./slot-type-cell";
 import ChannelModeCell from "./channel-mode-cell";
+import FrequencyCell from "./frequency-cell";
+import ToneSquelchCell from "./tone-squelch-cell";
+import PowerCell from "./power-cell";
 
 declare module "@tanstack/react-table" {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -49,57 +52,44 @@ const columns = [
   }),
   columnHelper.accessor("channel.power", {
     header: "Power",
-    cell: (props) => {
-      const power = props.getValue();
-      if (power != null) {
-        return `${props.getValue()?.label} (${props.getValue()?.milliwatts}mW)`;
-      }
-
-      return null;
+    cell: PowerCell,
+    meta: {
+      tdClassName: styles.cellAlignCenter,
     },
   }),
   columnHelper.accessor("channel.frequency", {
     header: "Frequency",
-    cell: (props) => (!props.row.original.isEmpty ? props.getValue().toString(10) : null),
+    cell: FrequencyCell,
+    meta: {
+      tdClassName: classNames(styles.cellTabularNums, styles.cellAlignRight),
+    },
   }),
   columnHelper.accessor("channel.offset", {
     header: "Offset",
-    cell: (props) => (!props.row.original.isEmpty ? props.getValue()?.toString(10) : null),
+    cell: FrequencyCell,
+    meta: {
+      tdClassName: classNames(styles.cellTabularNums, styles.cellAlignRight),
+    },
   }),
   columnHelper.accessor("channel.step", {
     header: "Step",
-    cell: (props) => (!props.row.original.isEmpty ? props.getValue()?.toString(10) : null),
+    cell: FrequencyCell,
+    meta: {
+      tdClassName: classNames(styles.cellTabularNums, styles.cellAlignRight),
+    },
   }),
   columnHelper.accessor("channel.rxTone", {
     header: "Rx Tone",
-    cell: (props) => {
-      const toneSquelch = props.getValue();
-      if (toneSquelch != null) {
-        if (toneSquelch.ctcss != null) {
-          return `CTCCS (${toneSquelch.ctcss / 10}Hz)`;
-        }
-        if (toneSquelch.dcs != null) {
-          return `DCS (${toneSquelch.dcs})`;
-        }
-      }
-
-      return null;
+    cell: ToneSquelchCell,
+    meta: {
+      tdClassName: styles.cellAlignCenter,
     },
   }),
   columnHelper.accessor("channel.txTone", {
     header: "Tx Tone",
-    cell: (props) => {
-      const toneSquelch = props.getValue();
-      if (toneSquelch != null) {
-        if (toneSquelch.ctcss != null) {
-          return `CTCCS (${toneSquelch.ctcss / 10}Hz)`;
-        }
-        if (toneSquelch.dcs != null) {
-          return `DCS ${toneSquelch.dcsReversePolarity ? "Reverse" : ""} (${toneSquelch.dcs})`;
-        }
-      }
-
-      return null;
+    cell: ToneSquelchCell,
+    meta: {
+      tdClassName: styles.cellAlignCenter,
     },
   }),
   columnHelper.accessor("channel.comment", {

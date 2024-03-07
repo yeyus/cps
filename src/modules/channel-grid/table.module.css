@@ -1,5 +1,5 @@
 .tableBody {
-    width: 100%;
+    min-width: 100%;
     background-color: var(--color-background);
     border: 1px solid var(--color-table-border);
     border-spacing: 0;
@@ -45,6 +45,10 @@
 
 .cellAlignRight {
     text-align: right;
+}
+
+.cellTabularNums {
+    font-variant-numeric: tabular-nums;
 }
 
 .columnRecordNumber {
