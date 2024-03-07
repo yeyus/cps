@@ -6,6 +6,7 @@ import { MemorySerializer } from "../../../memory-serializer";
 import { MemoryMapChannel, QuanshengUVK5MemoryMap } from "./memory-map";
 
 const STEP_LOOKUP_TABLE = [
+  BigInt(1000),
   BigInt(2500),
   BigInt(5000),
   BigInt(6250),
