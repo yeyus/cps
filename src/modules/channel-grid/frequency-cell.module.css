@@ -1,0 +1,13 @@
+.unitIcon {
+    display: inline-block;
+    height: 25px;
+    margin-bottom: -6px;
+    margin-left: -7px;
+}
+
+.label {
+    font-family: monospace;
+    font-size: 19px;
+    line-height: 25px;
+    text-wrap: nowrap;
+}
