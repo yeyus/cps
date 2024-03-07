@@ -1,25 +1,26 @@
 import * as React from "react";
 import { CellContext } from "@tanstack/react-table";
+import { PiWaveSine, PiWaveSquare } from "react-icons/pi";
 
 import Pill from "@modules/ui/pill";
 import { ChannelSlot, Mode } from "@/proto/gen/cps/model/v1/channel_pb";
 
 import styles from "./channel-mode-cell.module.css";
 
-const CHANNEL_MODE: Record<Mode, [string, string]> = {
-  [Mode.AM]: ["AM", styles.modeAM],
-  [Mode.FM]: ["FM", styles.modeFM],
-  [Mode.NFM]: ["FM", styles.modeFM],
-  [Mode.WFM]: ["FM", styles.modeFM],
-  [Mode.SSB]: ["SSB", styles.modeSSB],
-  [Mode.USB]: ["USB", styles.modeUSB],
-  [Mode.LSB]: ["LSB", styles.modeLSB],
-  [Mode.DMR]: ["DMR", styles.modeDMR],
-  [Mode.P25]: ["P25", styles.modeP25],
-  [Mode.DSTAR]: ["DSTAR", styles.modeDSTAR],
-  [Mode.C4FM]: ["C4FM", styles.modeC4FM],
-  [Mode.M17]: ["M17", styles.modeM17],
-  [Mode.NXDN]: ["NXDN", styles.modeNXDN],
+const CHANNEL_MODE: Record<Mode, [string, "analog" | "digital", string]> = {
+  [Mode.AM]: ["AM", "analog", styles.modeAM],
+  [Mode.FM]: ["FM", "analog", styles.modeFM],
+  [Mode.NFM]: ["FM", "analog", styles.modeFM],
+  [Mode.WFM]: ["FM", "analog", styles.modeFM],
+  [Mode.SSB]: ["SSB", "analog", styles.modeSSB],
+  [Mode.USB]: ["USB", "analog", styles.modeUSB],
+  [Mode.LSB]: ["LSB", "analog", styles.modeLSB],
+  [Mode.DMR]: ["DMR", "digital", styles.modeDMR],
+  [Mode.P25]: ["P25", "digital", styles.modeP25],
+  [Mode.DSTAR]: ["DSTAR", "digital", styles.modeDSTAR],
+  [Mode.C4FM]: ["C4FM", "digital", styles.modeC4FM],
+  [Mode.M17]: ["M17", "digital", styles.modeM17],
+  [Mode.NXDN]: ["NXDN", "digital", styles.modeNXDN],
 };
 
 export default function ChannelModeCell(props: CellContext<ChannelSlot, Mode | undefined>) {
@@ -29,7 +30,12 @@ export default function ChannelModeCell(props: CellContext<ChannelSlot, Mode | u
 
   const label = CHANNEL_MODE[channelMode];
   if (label != null) {
-    return <Pill className={label[1]}>{label[0]}</Pill>;
+    return (
+      <Pill className={label[2]}>
+        <span>{label[1] === "analog" ? <PiWaveSine /> : <PiWaveSquare />}</span>
+        <span className={styles.text}>{label[0]}</span>
+      </Pill>
+    );
   }
 
   return <Pill>Unknown</Pill>;
