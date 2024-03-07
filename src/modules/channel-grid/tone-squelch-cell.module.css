@@ -1,0 +1,14 @@
+.text {
+    margin-left: 3px;
+    line-height: 18px;
+}
+
+.ctcss {
+    background-color: var(--color-mode-dstar);
+    color: var(--color-base-ramp-e00);
+}
+
+.dcs {
+    background-color: var(--color-mode-nxdn);
+    color: var(--color-base-ramp-100);
+}
