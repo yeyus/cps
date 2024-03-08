@@ -6,7 +6,7 @@
 }
 
 .label {
-    font-family: monospace;
+    font-family: "Noto Sans Mono", monospace;
     font-size: 19px;
     line-height: 25px;
     text-wrap: nowrap;

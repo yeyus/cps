@@ -54,6 +54,7 @@ const columns = [
     header: "Power",
     cell: PowerCell,
     meta: {
+      thClassName: styles.cellAlignCenter,
       tdClassName: styles.cellAlignCenter,
     },
   }),
@@ -61,6 +62,7 @@ const columns = [
     header: "Frequency",
     cell: FrequencyCell,
     meta: {
+      thClassName: styles.cellAlignCenter,
       tdClassName: classNames(styles.cellTabularNums, styles.cellAlignRight),
     },
   }),
@@ -68,6 +70,7 @@ const columns = [
     header: "Offset",
     cell: FrequencyCell,
     meta: {
+      thClassName: styles.cellAlignCenter,
       tdClassName: classNames(styles.cellTabularNums, styles.cellAlignRight),
     },
   }),
@@ -75,6 +78,7 @@ const columns = [
     header: "Step",
     cell: FrequencyCell,
     meta: {
+      thClassName: styles.cellAlignCenter,
       tdClassName: classNames(styles.cellTabularNums, styles.cellAlignRight),
     },
   }),
@@ -82,6 +86,7 @@ const columns = [
     header: "Rx Tone",
     cell: ToneSquelchCell,
     meta: {
+      thClassName: styles.cellAlignCenter,
       tdClassName: styles.cellAlignCenter,
     },
   }),
@@ -89,6 +94,7 @@ const columns = [
     header: "Tx Tone",
     cell: ToneSquelchCell,
     meta: {
+      thClassName: styles.cellAlignCenter,
       tdClassName: styles.cellAlignCenter,
     },
   }),
@@ -105,10 +111,10 @@ export default function ChannelGridTable({ channelSlots }: { channelSlots: Chann
     <table className={styles.tableBody}>
       <thead className={styles.tableHeader}>
         {table.getHeaderGroups().map((headerGroup) => (
-          <tr key={headerGroup.id}>
+          <tr key={`tr-head-${headerGroup.id}`}>
             {headerGroup.headers.map((header) => (
               <th
-                key={headerGroup.id}
+                key={header.id}
                 className={classNames(styles.tableHeaderCell, header.column.columnDef.meta?.thClassName)}
               >
                 {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
@@ -119,7 +125,10 @@ export default function ChannelGridTable({ channelSlots }: { channelSlots: Chann
       </thead>
       <tbody>
         {table.getRowModel().rows.map((row) => (
-          <tr key={row.id} className={classNames(styles.tableRow, { [styles.emptyChannelSlow]: row.original.isEmpty })}>
+          <tr
+            key={`tr-body-${row.id}`}
+            className={classNames(styles.tableRow, { [styles.emptyChannelSlow]: row.original.isEmpty })}
+          >
             {row.getVisibleCells().map((cell) => (
               <td key={cell.id} className={classNames(styles.tableCell, cell.column.columnDef.meta?.tdClassName)}>
                 {flexRender(cell.column.columnDef.cell, cell.getContext())}
