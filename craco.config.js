@@ -9,7 +9,9 @@ module.exports = {
       plugin: interpolateHtml,
       options: {
         ENVIRONMENT: process.env.ENVIRONMENT || "development",
-        BUILD_VERSION: childProcess.execSync("git rev-parse HEAD", { cwd: __dirname }).toString().trim(),
+        BUILD_VERSION:
+          process.env.CF_PAGES_COMMIT_SHA ||
+          childProcess.execSync("git rev-parse HEAD", { cwd: __dirname }).toString().trim(),
       },
     },
   ],
