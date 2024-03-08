@@ -13,6 +13,7 @@ import { RadioDefinition } from "@configs/radio-config";
 import RadioDownloader from "@modules/radio-downloader/radio-downloader";
 import { RadioTransports } from "@modules/radio-types/transports";
 import ThemeSwitcher from "@modules/theme-switcher";
+import AppVersion from "@modules/app-version";
 
 import CodeplugFileImport from "@modules/codeplug-file-import";
 import ChannelGridWrapper from "@modules/channel-grid";
@@ -41,7 +42,8 @@ function App() {
       <CodeplugProvider>
         <div className={classNames(styles.App, { "theme-light": theme === "light", "theme-dark": theme === "dark" })}>
           <header className={styles.header}>
-            <ThemeSwitcher className={styles.themeSwitcher} />
+            <AppVersion />
+            <ThemeSwitcher />
           </header>
           {radioDefinition == null && (
             <section>
