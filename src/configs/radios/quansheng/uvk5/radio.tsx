@@ -1,15 +1,15 @@
 import retry from "async-retry";
-import { Transport } from "../../../../modules/connection-manager/types";
-import { TransferEmitter } from "../../../../utils/transfer-emitter";
-import { RadioDefinition } from "../../../radio-config";
+
+import { SerialRadio } from "@modules/radio-types/transports/serial/serial";
+import SerialConnection from "@modules/radio-types/transports/serial/serial-connection";
+import { CodeplugReadResponse, Transport } from "@modules/radio-types/base";
+import { Codeplug } from "@/proto/gen/cps/model/v1/codeplug_pb";
+import { TransferEmitter } from "@utils/transfer-emitter";
+import getLogger from "@utils/logger";
 
 import image from "./photo.png";
-import { SerialRadio } from "../../../../modules/radio-types/transports/serial/serial";
-import getLogger from "../../../../utils/logger";
-import SerialConnection from "../../../../modules/radio-types/transports/serial/serial-connection";
-import { CodeplugReadResponse } from "../../../../modules/radio-types/base";
 import QuanshengUVK5MemorySerializer from "./memory-serializer";
-import { Codeplug } from "../../../../proto/gen/cps/model/v1/codeplug_pb";
+import { RadioDefinition } from "../../../radio-config";
 
 const logger = getLogger("QuanshengUVK5");
 

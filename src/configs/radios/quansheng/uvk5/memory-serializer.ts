@@ -1,18 +1,12 @@
 import { Timestamp } from "@bufbuild/protobuf";
-import { CodeplugReadResponse } from "../../../../modules/radio-types/base";
-import {
-  Channel,
-  ChannelSlot,
-  ChannelSlotType,
-  Mode,
-  Power,
-  ToneSquelch,
-} from "../../../../proto/gen/cps/model/v1/channel_pb";
-import { Codeplug, RadioIdentification, RadioType } from "../../../../proto/gen/cps/model/v1/codeplug_pb";
+import { CodeplugReadResponse } from "@modules/radio-types/base";
+import { Channel, ChannelSlot, ChannelSlotType, Mode, Power, ToneSquelch } from "@/proto/gen/cps/model/v1/channel_pb";
+import { Codeplug, RadioIdentification, RadioType } from "@/proto/gen/cps/model/v1/codeplug_pb";
 import { MemorySerializer } from "../../../memory-serializer";
 import { MemoryMapChannel, QuanshengUVK5MemoryMap } from "./memory-map";
 
 const STEP_LOOKUP_TABLE = [
+  BigInt(1000),
   BigInt(2500),
   BigInt(5000),
   BigInt(6250),
@@ -59,6 +53,16 @@ const BANDS_LOOKUP_TABLE = [
   "BAND 7 470Mhz-600Mhz VFO B",
 ];
 
+function parseName(chars: string[]): string {
+  let parsed = "";
+  for (let i = 0; i < chars.length; i += 1) {
+    if (chars[i].charCodeAt(0) < 0x20 || chars[i].charCodeAt(0) > 0x7f) return parsed;
+    parsed += chars[i];
+  }
+
+  return parsed;
+}
+
 export default class QuanshengUVK5MemorySerializer implements MemorySerializer {
   deserialize(codeplugRead: CodeplugReadResponse): Codeplug {
     const memoryMap = QuanshengUVK5MemoryMap.fromBuffer(codeplugRead.memory);
@@ -89,7 +93,7 @@ export default class QuanshengUVK5MemorySerializer implements MemorySerializer {
         channelSlots.push(new ChannelSlot({ type: ChannelSlotType.MEMORY, isEmpty: true }));
       } else {
         const channelSlot = new ChannelSlot({ type: ChannelSlotType.MEMORY, isEmpty: false });
-        channelSlot.channel = this.deserializeChannel(channel, memoryMap.channelname[i].name.join(""));
+        channelSlot.channel = this.deserializeChannel(channel, parseName(memoryMap.channelname[i].name));
         channelSlots.push(channelSlot);
       }
     }

@@ -1,10 +1,12 @@
 import * as React from "react";
 import * as ReactDOM from "react-dom";
-import { CodeplugReadResponse } from "../radio-types/base";
-import { RadioDefinition } from "../../configs/radio-config";
+
+import { RadioDefinition } from "@configs/radio-config";
+import { loadCodeplugAction } from "@stores/codeplug/actions";
+import { useCodeplug } from "@stores/codeplug/context";
+
 import { RadioTransports } from "../radio-types/transports";
-import { loadCodeplugAction } from "../codeplug-manager/actions";
-import { useCodeplug } from "../codeplug-manager/context";
+import { CodeplugReadResponse } from "../radio-types/base";
 
 interface FormState {
   error?: string;
@@ -20,6 +22,7 @@ interface FormState {
 }
 
 export default function CodeplugFileImport({ radioDefinition }: { radioDefinition: RadioDefinition<RadioTransports> }) {
+  const [isFileSelected, setFileSelected] = React.useState(false);
   const { dispatch } = useCodeplug();
 
   async function parseFile(_prevState: FormState, formData: FormData): Promise<FormState> {
@@ -49,10 +52,16 @@ export default function CodeplugFileImport({ radioDefinition }: { radioDefinitio
 
   const [formState, formAction] = ReactDOM.useFormState(parseFile, {});
 
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setFileSelected(event.target.value != null);
+  };
+
   return (
     <form action={formAction}>
-      <input type="file" name="file" accept=".bin,application/octet-stream" />
-      <button type="submit">Import RAW Codeplug</button>
+      <input type="file" name="file" accept=".bin,application/octet-stream" onChange={handleFileChange} />
+      <button type="submit" disabled={!isFileSelected}>
+        Import RAW Codeplug
+      </button>
       {formState?.error != null && <div className="error">{formState.error}</div>}
       {formState?.success != null && (
         <div className="success">

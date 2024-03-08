@@ -1,12 +1,14 @@
 import * as React from "react";
-import { TransferEmitter } from "../../utils/transfer-emitter";
-import { useConnection } from "../connection-manager/context";
-import { ConnectionStatus } from "../connection-manager/types";
-import { CodeplugReadResponse } from "../radio-types/base";
-import { useCodeplug } from "../codeplug-manager/context";
-import { loadCodeplugAction } from "../codeplug-manager/actions";
+
+import { RadioDefinition } from "@configs/radio-config";
+import { useConnection } from "@stores/connection/context";
+import { ConnectionStatus } from "@stores/connection/types";
+import { useCodeplug } from "@stores/codeplug/context";
+import { loadCodeplugAction } from "@stores/codeplug/actions";
+import { TransferEmitter } from "@utils/transfer-emitter";
+
 import ExportMemoryButton from "./export-memory-button";
-import { RadioDefinition } from "../../configs/radio-config";
+import { CodeplugReadResponse } from "../radio-types/base";
 import { RadioTransports } from "../radio-types/transports";
 
 export default function RadioDownloader({ radioDefinition }: { radioDefinition: RadioDefinition<RadioTransports> }) {

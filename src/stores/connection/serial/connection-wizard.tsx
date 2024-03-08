@@ -1,11 +1,11 @@
 import * as React from "react";
-import { RadioDefinition } from "../../../configs/radio-config";
+import SerialConnection from "@modules/radio-types/transports/serial/serial-connection";
+import { RadioDefinition } from "@configs/radio-config";
+import { SerialRadio } from "@modules/radio-types/transports/serial/serial";
 import { ConnectSerialRadioAction, DisconnectSerialRadioAction } from "../actions";
 import { useConnection } from "../context";
 import { ConnectionStatus } from "../types";
 import useSerial from "./useSerial";
-import SerialConnection from "../../radio-types/transports/serial/serial-connection";
-import { SerialRadio } from "../../radio-types/transports/serial/serial";
 
 interface SerialPortItemProps {
   port: SerialPort;

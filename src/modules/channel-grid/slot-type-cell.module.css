@@ -1,0 +1,11 @@
+.slotTypeCell {
+    width: 100%;
+    vertical-align: middle;
+    text-align: center;
+}
+
+.slotTypeIcon {
+    margin: 0px 5px;
+    width: 30px;
+    height: 30px;
+}

@@ -1,14 +1,26 @@
 import * as React from "react";
-import { ConnectionProvider } from "./modules/connection-manager/context";
-import "./App.css";
-import ConnectionWizard from "./modules/connection-manager/serial/connection-wizard";
-import RadioPicker from "./modules/radio-picker/radio-picker";
-import { RadioDefinition } from "./configs/radio-config";
-import { Transport } from "./modules/connection-manager/types";
-import RadioDownloader from "./modules/radio-downloader/radio-downloader";
-import { RadioTransports } from "./modules/radio-types/transports";
-import { CodeplugProvider } from "./modules/codeplug-manager/context";
-import CodeplugFileImport from "./modules/codeplug-file-import";
+import classNames from "classnames";
+
+import { ConnectionProvider } from "@stores/connection/context";
+import ConnectionWizard from "@stores/connection/serial/connection-wizard";
+import { CodeplugProvider } from "@stores/codeplug/context";
+import { useTheme } from "@stores/theme";
+
+import { Transport } from "@stores/connection/types";
+
+import RadioPicker from "@modules/radio-picker/radio-picker";
+import { RadioDefinition } from "@configs/radio-config";
+import RadioDownloader from "@modules/radio-downloader/radio-downloader";
+import { RadioTransports } from "@modules/radio-types/transports";
+import ThemeSwitcher from "@modules/theme-switcher";
+
+import CodeplugFileImport from "@modules/codeplug-file-import";
+import ChannelGridWrapper from "@modules/channel-grid";
+
+import "./styles/accessibility.css";
+import "./styles/zindex.css";
+import "./styles/colors.css";
+import styles from "./App.module.css";
 
 declare global {
   interface Window {
@@ -20,13 +32,17 @@ declare global {
 window.DebugCPS = window.DebugCPS || {};
 
 function App() {
+  const theme = useTheme();
   const [radioDefinition, setRadioDefinition] = React.useState<RadioDefinition<RadioTransports>>();
   const handleRadioSelect = (selected: RadioDefinition<RadioTransports>) => setRadioDefinition(selected);
 
   return (
     <ConnectionProvider>
       <CodeplugProvider>
-        <div className="App">
+        <div className={classNames(styles.App, { "theme-light": theme === "light", "theme-dark": theme === "dark" })}>
+          <header className={styles.header}>
+            <ThemeSwitcher className={styles.themeSwitcher} />
+          </header>
           {radioDefinition == null && (
             <section>
               <h2>Select your radio</h2>
@@ -53,6 +69,7 @@ function App() {
               </div>
             </section>
           )}
+          <ChannelGridWrapper />
         </div>
       </CodeplugProvider>
     </ConnectionProvider>

@@ -10,6 +10,17 @@ enum Mode {
     WFM = 2;
 
     AM = 3;
+
+    SSB = 4;
+    USB = 5;
+    LSB = 6;
+
+    DMR = 7;
+    P25 = 8;
+    DSTAR = 9;
+    C4FM = 10;
+    M17 = 11;
+    NXDN = 12;
 }
 
 enum ChannelSlotType {

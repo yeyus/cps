@@ -1,0 +1,104 @@
+:root {
+    /* https://coolors.co/08080c-8d99ae-edf2f4-7fb069-d80032 */
+    --color-black: #08080c;
+    --color-space-cadet: #2B2D42;
+    --color-cool-gray: #8D99AE;
+    --color-anti-flash-white: #EDF2F4;
+    --color-crimson: #D80032;
+    --color-asparagus: #7FB069;
+
+    /* https://colorkit.co/gradient-palette/edf2f4-2b2d42/?steps=10 */
+    --color-base-ramp-e00: var(--color-anti-flash-white);
+    --color-base-ramp-d00: #d6dadf;
+    --color-base-ramp-d00-rgb: 214, 218, 223;
+    --color-base-ramp-c00: #c0c5cb;
+    --color-base-ramp-c00-rgb: 192, 197, 203;
+    --color-base-ramp-b00: #abafb7;
+    --color-base-ramp-a00: #9699a4;
+    --color-base-ramp-900: #808490;
+    --color-base-ramp-800: #6b6e7d;
+    --color-base-ramp-700: #565869;
+    --color-base-ramp-600: #404356;
+    /* https://colorkit.co/gradient-palette/2b2d42-08080c/ */
+    --color-base-ramp-500: var(--color-space-cadet);
+    --color-base-ramp-400: #222334;
+    --color-base-ramp-400-rgb: 34, 35, 52;
+    --color-base-ramp-300: #191a27;
+    --color-base-ramp-200: #111119;
+    --color-base-ramp-100: var(--color-black);
+
+    --color-crimson-ramp-d00: #FFEBEF;
+    --color-crimson-ramp-c00: #FFC2D0;
+    --color-crimson-ramp-b00: #FF99B1;
+    --color-crimson-ramp-a00: #FF7092;
+    --color-crimson-ramp-900: #FF4772;
+    --color-crimson-ramp-800: #FF1F53;
+    --color-crimson-ramp-700: var(--color-crimson);
+    --color-crimson-ramp-600: #B8002B;
+    --color-crimson-ramp-500: #8F0021;
+    --color-crimson-ramp-400: #660018;
+    --color-crimson-ramp-300: #3D000E;
+    --color-crimson-ramp-200: #29000A;
+    --color-crimson-ramp-100: #140005;
+
+    --color-asparagus-ramp-f00: #F4F8F2;
+    --color-asparagus-ramp-e00: #E8F1E4;
+    --color-asparagus-ramp-d00: #DDEAD7;
+    --color-asparagus-ramp-c00: #C6DCBC;
+    --color-asparagus-ramp-b00: #AFCEA1;
+    --color-asparagus-ramp-a00: #99C087;
+    --color-asparagus-ramp-900: var(--color-asparagus);
+    --color-asparagus-ramp-800: #6CA054;
+    --color-asparagus-ramp-700: #5A8646;
+    --color-asparagus-ramp-600: #486B38;
+    --color-asparagus-ramp-500: #36502A;
+    --color-asparagus-ramp-400: #2D4323;
+    --color-asparagus-ramp-300: #24351C;
+    --color-asparagus-ramp-200: #121B0E;
+    --color-asparagus-ramp-100: #090D07;
+
+    --color-mode-am: var(--color-crimson-ramp-900);
+    --color-mode-fm: var(--color-asparagus-ramp-800);
+    --color-mode-usb: #564592;
+    --color-mode-lsb: #8474BE;
+    --color-mode-dmr: #CC3F0C;
+    --color-mode-p25: #577399;
+    --color-mode-dstar: #2B59C3;
+    --color-mode-c4fm: #686963;
+    --color-mode-m17: #48ACF0;
+    --color-mode-nxdn: #F1D302;
+}
+
+.theme-light {
+    --color-background: var(--color-base-ramp-e00);
+    --color-nav-elements-bg: var(--color-base-ramp-c00);
+    --color-nav-elements-header-bg: rgba(var(--color-base-ramp-c00-rgb), 0.5);
+    --color-control: var(--color-base-ramp-c00);
+
+    --color-table-border: var(--color-base-ramp-a00);
+    --color-table-border-muted: var(--color-base-ramp-d00);
+    --color-table-header: var(--color-base-ramp-c00);
+    --color-table-row-hover: var(--color-asparagus-ramp-d00);
+    --color-table-row-disabled: var(--color-base-ramp-d00);
+
+    --color-text-normal: var(--color-base-ramp-200);
+    --color-text-muted: var(--color-base-ramp-600);
+    --color-text-selected: var(--color-asparagus-ramp-500);
+}
+
+.theme-dark {
+    --color-background: var(--color-base-ramp-100);
+    --color-nav-elements-bg: var(--color-base-ramp-400);
+    --color-nav-elements-header-bg: rgba(var(--color-base-ramp-400-rgb), 0.5);
+    --color-control: var(--color-base-ramp-500);
+
+    --color-table-border: var(--color-base-ramp-800);
+    --color-table-border-muted: var(--color-base-ramp-500);
+    --color-table-header: var(--color-base-ramp-300);
+    --color-table-row-hover: var(--color-asparagus-ramp-300);
+    --color-table-row-disabled: var(--color-base-ramp-400);
+
+    --color-text-normal: var(--color-base-ramp-b00);
+    --color-text-muted: var(--color-base-ramp-800);
+    --color-text-selected: var(--color-asparagus-ramp-800);
+}

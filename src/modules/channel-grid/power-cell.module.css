@@ -1,0 +1,42 @@
+.text {
+    margin-left: 3px;
+    line-height: 18px;
+}
+
+.power {
+    color: var(--color-base-ramp-100);
+}
+
+.level0 {
+    background-color: var(--color-asparagus-ramp-e00);
+}
+
+.level1 {
+    background-color: var(--color-asparagus-ramp-d00);
+}
+
+.level2 {
+    background-color: var(--color-asparagus-ramp-c00);
+}
+
+.level3 {
+    background-color: var(--color-asparagus-ramp-b00);
+}
+
+.level4 {
+    background-color: var(--color-asparagus-ramp-a00);
+}
+
+.level5 {
+    background-color: var(--color-asparagus-ramp-900);
+}
+
+.level6 {
+    background-color: var(--color-asparagus-ramp-800);
+    color: var(--color-base-ramp-e00);
+}
+
+.level7 {
+    background-color: var(--color-asparagus-ramp-700);
+    color: var(--color-base-ramp-e00);
+}

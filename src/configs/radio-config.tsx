@@ -1,5 +1,5 @@
-import { BaseRadioInterface, CodeplugReadResponse, Transport } from "../modules/radio-types/base";
-import { Codeplug } from "../proto/gen/cps/model/v1/codeplug_pb";
+import { BaseRadioInterface, CodeplugReadResponse, Transport } from "@modules/radio-types/base";
+import { Codeplug } from "@proto/cps/model/v1/codeplug_pb";
 
 export type BrandModelRevision = [string, string, number];
 

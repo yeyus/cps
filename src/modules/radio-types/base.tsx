@@ -1,5 +1,5 @@
 /* eslint-disable max-classes-per-file */
-import { TransferEmitter } from "../../utils/transfer-emitter";
+import { TransferEmitter } from "@utils/transfer-emitter";
 
 export enum Transport {
   USB_CUSTOM = "usb-custom",

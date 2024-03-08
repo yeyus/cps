@@ -1,0 +1,31 @@
+.switcher {
+    margin-left: 15px;
+    margin-right: 15px;
+    display: inline-flex;
+    height: 30px;
+    width: 55px;
+    border-radius: 9999px;
+    border: 0;
+    background-color: var(--color-background);
+}
+
+.thumb {
+    display: inline-block;
+    height: 28px;
+    width: 28px;
+    border-radius: 9999px;
+    background-color: var(--color-control);
+    transition: all 0.5s;
+}
+
+.thumb svg {
+    padding: 2px;
+}
+
+.checked {
+    transform: translateX(-4px);
+}
+
+.unchecked {
+    transform: translateX(19px);
+}

@@ -6,6 +6,8 @@
     "@bufbuild/buf": "^1.29.0",
     "@bufbuild/protobuf": "^1.7.2",
     "@bufbuild/protoc-gen-es": "^1.7.2",
+    "@headlessui/react": "^1.7.18",
+    "@tanstack/react-table": "^8.13.2",
     "@testing-library/jest-dom": "^6.2.0",
     "@testing-library/react": "^14.1.2",
     "@testing-library/user-event": "^14.5.2",
@@ -18,19 +20,22 @@
     "classnames": "^2.5.1",
     "react": "^18.3.0-canary-01ab35a9a-20240228",
     "react-dom": "^18.3.0-canary-01ab35a9a-20240228",
+    "react-icons": "^5.0.1",
     "react-scripts": "5.0.1",
     "typescript": "^5.3.3",
     "web-vitals": "^3.5.1"
   },
   "overrides": {
-    "typescript": "^5.3.3"
+    "typescript": "^5.3.3",
+    "react": "^18.3.0-canary-01ab35a9a-20240228",
+    "react-dom": "^18.3.0-canary-01ab35a9a-20240228"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
+    "start": "craco start",
+    "build": "craco build",
     "build:proto": "buf generate proto",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject",
+    "test": "craco test",
+    "eject": "craco eject",
     "lint": "eslint src --ext .js,.jsx,.ts,.tsx"
   },
   "eslintConfig": {
@@ -52,6 +57,7 @@
     ]
   },
   "devDependencies": {
+    "@craco/craco": "^7.1.0",
     "@ohm-js/cli": "^2.0.0",
     "@types/async-retry": "^1.4.8",
     "@types/yargs": "^17.0.32",
@@ -60,6 +66,7 @@
     "eslint": "^8.56.0",
     "eslint-config-airbnb": "^19.0.4",
     "eslint-config-prettier": "^9.1.0",
+    "eslint-import-resolver-alias": "^1.1.2",
     "eslint-plugin-import": "^2.29.1",
     "eslint-plugin-jsx-a11y": "^6.8.0",
     "eslint-plugin-prettier": "^5.1.3",

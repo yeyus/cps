@@ -29,6 +29,51 @@ export enum Mode {
    * @generated from enum value: AM = 3;
    */
   AM = 3,
+
+  /**
+   * @generated from enum value: SSB = 4;
+   */
+  SSB = 4,
+
+  /**
+   * @generated from enum value: USB = 5;
+   */
+  USB = 5,
+
+  /**
+   * @generated from enum value: LSB = 6;
+   */
+  LSB = 6,
+
+  /**
+   * @generated from enum value: DMR = 7;
+   */
+  DMR = 7,
+
+  /**
+   * @generated from enum value: P25 = 8;
+   */
+  P25 = 8,
+
+  /**
+   * @generated from enum value: DSTAR = 9;
+   */
+  DSTAR = 9,
+
+  /**
+   * @generated from enum value: C4FM = 10;
+   */
+  C4FM = 10,
+
+  /**
+   * @generated from enum value: M17 = 11;
+   */
+  M17 = 11,
+
+  /**
+   * @generated from enum value: NXDN = 12;
+   */
+  NXDN = 12,
 }
 // Retrieve enum metadata with: proto3.getEnumType(Mode)
 proto3.util.setEnumType(Mode, "cps.model.v1.Mode", [
@@ -36,6 +81,15 @@ proto3.util.setEnumType(Mode, "cps.model.v1.Mode", [
   { no: 1, name: "NFM" },
   { no: 2, name: "WFM" },
   { no: 3, name: "AM" },
+  { no: 4, name: "SSB" },
+  { no: 5, name: "USB" },
+  { no: 6, name: "LSB" },
+  { no: 7, name: "DMR" },
+  { no: 8, name: "P25" },
+  { no: 9, name: "DSTAR" },
+  { no: 10, name: "C4FM" },
+  { no: 11, name: "M17" },
+  { no: 12, name: "NXDN" },
 ]);
 
 /**

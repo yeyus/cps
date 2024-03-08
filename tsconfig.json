@@ -19,9 +19,19 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": true,
-    "jsx": "react-jsx"
+    "jsx": "react-jsx",
+    "baseUrl": "./",
+    "paths": {
+        "@/*": ["src/*"],
+        "@stores/*": ["src/stores/*"],
+        "@modules/*": ["src/modules/*"],
+        "@proto/*": ["src/proto/gen/*"],
+        "@utils/*": ["src/utils/*"],
+        "@configs/*": ["src/configs/*"]
+    }
   },
   "include": [
     "src"
-  ]
+  ],
+  "exclude": ["node_modules", "dist"]
 }

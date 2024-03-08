@@ -1,5 +1,5 @@
 import * as React from "react";
-import getLogger from "../../../utils/logger";
+import getLogger from "@utils/logger";
 
 const logger = getLogger("useSerial");
 
