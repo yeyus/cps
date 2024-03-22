@@ -1,0 +1,16 @@
+.listboxButton {
+    border: 0;
+    padding: 4px 10px;
+    background-color: transparent;
+    color: var(--color-text-normal);
+}
+
+.buttonChevron {
+    color: var(--color-text-muted);
+    margin-left: 8px;
+}
+
+.takeWholeCell {
+    width: 100%;
+    height: 100%;
+}

@@ -1,6 +1,5 @@
 .tableWrapper {
     width: 100%;
-    overflow-x: auto;
 }
 
 .tableBody {
@@ -13,7 +12,7 @@
 }
 
 .tableHeader {
-    top: 0px;
+    top: 60px;
     position: sticky;
     background-color: var(--color-table-header);
     text-transform: uppercase;
@@ -50,6 +49,10 @@
 
 .cellAlignRight {
     text-align: right;
+}
+
+.cellNoWrap {
+    text-wrap: nowrap;
 }
 
 .cellTabularNums {

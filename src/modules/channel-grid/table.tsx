@@ -49,6 +49,9 @@ const columns = [
   columnHelper.accessor("channel.name", {
     header: "Name",
     cell: (name) => name.getValue(),
+    meta: {
+      tdClassName: styles.cellNoWrap,
+    },
   }),
   columnHelper.accessor("channel.mode", {
     header: "Mode",
