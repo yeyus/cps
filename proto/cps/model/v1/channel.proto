@@ -3,6 +3,7 @@ syntax = "proto3";
 package cps.model.v1;
 
 import "google/protobuf/timestamp.proto";
+import "cps/model/v1/custom/uvk5/uvk5.proto";
 
 enum Mode {
     FM = 0;
@@ -62,6 +63,9 @@ message Channel {
     optional string name = 40;
 
     optional Power power = 60;
+
+    /* Custom radio section */
+    optional cps.model.v1.custom.uvk5.UVK5ChannelCustomParams uvk5_custom_channel_params = 1000;
 
     /* metadata section */
     optional string comment = 100;

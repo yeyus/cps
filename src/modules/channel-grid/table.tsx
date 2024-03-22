@@ -1,14 +1,22 @@
 import * as React from "react";
-import { RowData, createColumnHelper, flexRender, getCoreRowModel, useReactTable } from "@tanstack/react-table";
+import {
+  ColumnDef,
+  RowData,
+  createColumnHelper,
+  flexRender,
+  getCoreRowModel,
+  useReactTable,
+} from "@tanstack/react-table";
 import classNames from "classnames";
 import { ChannelSlot } from "../../proto/gen/cps/model/v1/channel_pb";
 
+import SlotTypeCell from "./cells/slot-type-cell";
+import ChannelModeCell from "./cells/channel-mode-cell";
+import FrequencyCell from "./cells/frequency-cell";
+import ToneSquelchCell from "./cells/tone-squelch-cell";
+import PowerCell from "./cells/power-cell";
+
 import styles from "./table.module.css";
-import SlotTypeCell from "./slot-type-cell";
-import ChannelModeCell from "./channel-mode-cell";
-import FrequencyCell from "./frequency-cell";
-import ToneSquelchCell from "./tone-squelch-cell";
-import PowerCell from "./power-cell";
 
 declare module "@tanstack/react-table" {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -104,8 +112,19 @@ const columns = [
   }),
 ];
 
-export default function ChannelGridTable({ channelSlots }: { channelSlots: ChannelSlot[] }) {
-  const table = useReactTable({ data: channelSlots, columns, getCoreRowModel: getCoreRowModel() });
+export default function ChannelGridTable({
+  channelSlots,
+  extraColumns,
+}: {
+  channelSlots: ChannelSlot[];
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  extraColumns: ColumnDef<ChannelSlot, any>[];
+}) {
+  const table = useReactTable({
+    data: channelSlots,
+    columns: [...columns, ...extraColumns],
+    getCoreRowModel: getCoreRowModel(),
+  });
 
   return (
     <table className={styles.tableBody}>

@@ -1,3 +1,8 @@
+.tableWrapper {
+    width: 100%;
+    overflow-x: auto;
+}
+
 .tableBody {
     min-width: 100%;
     background-color: var(--color-background);
@@ -8,7 +13,7 @@
 }
 
 .tableHeader {
-    top: 60px;
+    top: 0px;
     position: sticky;
     background-color: var(--color-table-header);
     text-transform: uppercase;

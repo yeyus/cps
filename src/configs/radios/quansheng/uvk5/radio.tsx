@@ -7,6 +7,9 @@ import { Codeplug } from "@/proto/gen/cps/model/v1/codeplug_pb";
 import { TransferEmitter } from "@utils/transfer-emitter";
 import getLogger from "@utils/logger";
 
+import { ChannelSlot } from "@/proto/gen/cps/model/v1/channel_pb";
+import { createColumnHelper } from "@tanstack/react-table";
+import CheckboxCell from "@/modules/channel-grid/cells/checkbox-cell";
 import image from "./photo.png";
 import QuanshengUVK5MemorySerializer from "./memory-serializer";
 import { RadioDefinition } from "../../../radio-config";
@@ -228,5 +231,38 @@ export const QuanshengUVK5Definition: RadioDefinition<QuanshengUVK5> = {
     parity: "none",
     flowControl: "none",
     stopBits: 1,
+  },
+  getExtraColumns() {
+    const columnHelper = createColumnHelper<ChannelSlot>();
+    return [
+      columnHelper.accessor("channel.uvk5CustomChannelParams.isScanlist1", {
+        header: "Scanlist 1",
+        cell: CheckboxCell,
+      }),
+      columnHelper.accessor("channel.uvk5CustomChannelParams.isScanlist2", {
+        header: "Scanlist 2",
+        cell: CheckboxCell,
+      }),
+      columnHelper.accessor("channel.uvk5CustomChannelParams.bclo", {
+        header: "BCLO",
+        cell: CheckboxCell,
+      }),
+      columnHelper.accessor("channel.uvk5CustomChannelParams.frequencyReverse", {
+        header: "Frequency Reverse",
+        cell: CheckboxCell,
+      }),
+      columnHelper.accessor("channel.uvk5CustomChannelParams.scrambler", {
+        header: "Scrambler",
+        cell: (cell) => cell.getValue(),
+      }),
+      columnHelper.accessor("channel.uvk5CustomChannelParams.isDtmf", {
+        header: "DTMF",
+        cell: CheckboxCell,
+      }),
+      columnHelper.accessor("channel.uvk5CustomChannelParams.dtmfPttId", {
+        header: "DTMF PTT ID",
+        cell: (cell) => cell.getValue(),
+      }),
+    ];
   },
 };

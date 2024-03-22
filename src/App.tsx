@@ -71,7 +71,7 @@ function App() {
               </div>
             </section>
           )}
-          <ChannelGridWrapper />
+          {radioDefinition != null && <ChannelGridWrapper radioDefinition={radioDefinition} />}
         </div>
       </CodeplugProvider>
     </ConnectionProvider>
