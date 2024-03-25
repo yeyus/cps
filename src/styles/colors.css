@@ -73,7 +73,8 @@
     --color-background: var(--color-base-ramp-e00);
     --color-nav-elements-bg: var(--color-base-ramp-c00);
     --color-nav-elements-header-bg: rgba(var(--color-base-ramp-c00-rgb), 0.5);
-    --color-control: var(--color-base-ramp-c00);
+    --color-control: var(--color-base-ramp-d00);
+    --color-control-selected: var(--color-base-ramp-b00);
 
     --color-table-border: var(--color-base-ramp-a00);
     --color-table-border-muted: var(--color-base-ramp-d00);
@@ -93,6 +94,7 @@
     --color-nav-elements-bg: var(--color-base-ramp-400);
     --color-nav-elements-header-bg: rgba(var(--color-base-ramp-400-rgb), 0.5);
     --color-control: var(--color-base-ramp-500);
+    --color-control-selected: var(--color-base-ramp-600);
 
     --color-table-border: var(--color-base-ramp-800);
     --color-table-border-muted: var(--color-base-ramp-500);

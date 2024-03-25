@@ -13,3 +13,10 @@ export const SCRAMBLER_VALUES = [
   { value: 9, label: "9" },
   { value: 10, label: "10" },
 ];
+
+export const DMTF_PTT_ID_VALUES = [
+  { value: 0, label: "Off" },
+  { value: 1, label: "Begin of Tx" },
+  { value: 2, label: "End of Tx" },
+  { value: 3, label: "Both" },
+];

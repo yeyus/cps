@@ -15,6 +15,7 @@ interface SelectProps<T> {
   onChange: (selectedValue: T) => void;
   buttonRenderer?: (value: T) => React.ReactNode;
   optionRenderer?: (value: T) => React.ReactNode;
+  optionIdRenderer?: (value: T) => string;
   className?: string;
 }
 
@@ -25,6 +26,7 @@ export default function Select<T>({
   className,
   buttonRenderer = PASSTHROUGH_RENDERER,
   optionRenderer = PASSTHROUGH_RENDERER,
+  optionIdRenderer = PASSTHROUGH_RENDERER,
 }: SelectProps<T>) {
   return (
     <div className={className}>
@@ -33,9 +35,9 @@ export default function Select<T>({
           {buttonRenderer(selectedValue)}
           <FaChevronDown className={styles.buttonChevron} />
         </Listbox.Button>
-        <Listbox.Options>
+        <Listbox.Options className={styles.listboxOptions}>
           {values.map((value) => (
-            <Listbox.Option key={`option-${value}`} value={value}>
+            <Listbox.Option key={optionIdRenderer(value)} value={value}>
               {optionRenderer(value)}
             </Listbox.Option>
           ))}
