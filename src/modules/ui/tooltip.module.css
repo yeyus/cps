@@ -1,0 +1,19 @@
+.tooltip {
+    color: var(--color-text-normal);
+    background-color: var(--color-control);
+    border: 1px solid var(--color-control-selected);
+    border-radius: 4px;
+    padding: 5px 10px;
+    backdrop-filter: blur(10px);
+    text-transform: none;
+    font-weight: normal;
+    max-width: 200px;
+    white-space: initial;
+}
+
+.hoverElement {
+    display: inline-block;
+    color: var(--color-text-normal);
+    border: 0px;
+    background-color: transparent;
+}

@@ -1,13 +1,17 @@
 import * as React from "react";
-import Select from "@modules/ui/select";
+import { CellContext, ColumnDefTemplate, createColumnHelper } from "@tanstack/react-table";
+import { TbHexagonLetterR } from "react-icons/tb";
 
 import { ChannelSlot, ChannelSlotType } from "@/proto/gen/cps/model/v1/channel_pb";
-import { CellContext, ColumnDefTemplate, createColumnHelper } from "@tanstack/react-table";
+
 import CheckboxCell from "@modules/channel-grid/cells/checkbox-cell";
 import UnsupportedCell from "@modules/channel-grid/cells/unsupported-cell";
-
 import tableStyles from "@modules/channel-grid/table.module.css";
+import Select from "@modules/ui/select";
+import Tooltip from "@modules/ui/tooltip";
 import selectStyles from "@modules/ui/select.module.css";
+
+import { COLUMN_ICON_SIZE } from "@modules/channel-grid/columns";
 import { DMTF_PTT_ID_VALUES, SCRAMBLER_VALUES } from "./values";
 
 const rowFilter =
@@ -29,7 +33,15 @@ export default function getExtraColumns() {
       cell: rowFilter(CheckboxCell, (original) => original.type === ChannelSlotType.MEMORY),
       meta: {
         tdClassName: tableStyles.cellAlignCenter,
-        isCustomColumn: true,
+        columnTooltip: (
+          <Tooltip
+            tooltipRenderer={() =>
+              "Menu 25: S-ADD 1. This channel will be included in the Scan pattern when Scanlist 1 is selected."
+            }
+          >
+            <TbHexagonLetterR size={COLUMN_ICON_SIZE} />
+          </Tooltip>
+        ),
       },
     }),
     columnHelper.accessor("channel.uvk5CustomChannelParams.isScanlist2", {
@@ -37,7 +49,15 @@ export default function getExtraColumns() {
       cell: rowFilter(CheckboxCell, (original) => original.type === ChannelSlotType.MEMORY),
       meta: {
         tdClassName: tableStyles.cellAlignCenter,
-        isCustomColumn: true,
+        columnTooltip: (
+          <Tooltip
+            tooltipRenderer={() =>
+              "Menu 26: S-ADD 2. This channel will be included in the Scan pattern when Scanlist 2 is selected."
+            }
+          >
+            <TbHexagonLetterR size={COLUMN_ICON_SIZE} />
+          </Tooltip>
+        ),
       },
     }),
     columnHelper.accessor("channel.uvk5CustomChannelParams.bclo", {
@@ -45,7 +65,15 @@ export default function getExtraColumns() {
       cell: rowFilter(CheckboxCell, (original) => original.type === ChannelSlotType.MEMORY),
       meta: {
         tdClassName: tableStyles.cellAlignCenter,
-        isCustomColumn: true,
+        columnTooltip: (
+          <Tooltip
+            tooltipRenderer={() =>
+              "Menu 12: BCL. Busy Channel LOck, the radio will not allow transmit while the frequency is in use. "
+            }
+          >
+            <TbHexagonLetterR size={COLUMN_ICON_SIZE} />
+          </Tooltip>
+        ),
       },
     }),
     columnHelper.accessor("channel.uvk5CustomChannelParams.frequencyReverse", {
@@ -53,7 +81,11 @@ export default function getExtraColumns() {
       cell: rowFilter(CheckboxCell, (original) => original.type === ChannelSlotType.MEMORY),
       meta: {
         tdClassName: tableStyles.cellAlignCenter,
-        isCustomColumn: true,
+        columnTooltip: (
+          <Tooltip tooltipRenderer={() => "Keys F+8. Reverse mode. Receive and transmit frequency reverse."}>
+            <TbHexagonLetterR size={COLUMN_ICON_SIZE} />
+          </Tooltip>
+        ),
       },
     }),
     columnHelper.accessor("channel.uvk5CustomChannelParams.scrambler", {
@@ -77,7 +109,15 @@ export default function getExtraColumns() {
         (original) => original.type === ChannelSlotType.MEMORY,
       ),
       meta: {
-        isCustomColumn: true,
+        columnTooltip: (
+          <Tooltip
+            tooltipRenderer={() =>
+              "Menu 11: SCR. Modifies the voice carrier to obscure voice communication. UV-K5 supports 10 different voice scrambling modes."
+            }
+          >
+            <TbHexagonLetterR size={COLUMN_ICON_SIZE} />
+          </Tooltip>
+        ),
       },
     }),
     columnHelper.accessor("channel.uvk5CustomChannelParams.isDtmf", {
@@ -85,7 +125,11 @@ export default function getExtraColumns() {
       cell: rowFilter(CheckboxCell, (original) => original.type === ChannelSlotType.MEMORY),
       meta: {
         tdClassName: tableStyles.cellAlignCenter,
-        isCustomColumn: true,
+        columnTooltip: (
+          <Tooltip tooltipRenderer={() => "Menu 43: D-DCD. Decode DTMF sequences sent by another radio."}>
+            <TbHexagonLetterR size={COLUMN_ICON_SIZE} />
+          </Tooltip>
+        ),
       },
     }),
     columnHelper.accessor("channel.uvk5CustomChannelParams.dtmfPttId", {
@@ -110,7 +154,15 @@ export default function getExtraColumns() {
         (original) => original.type === ChannelSlotType.MEMORY,
       ),
       meta: {
-        isCustomColumn: true,
+        columnTooltip: (
+          <Tooltip
+            tooltipRenderer={() =>
+              "Menu 42: PTT-ID. DTMF PTT-ID TX Mode（OFF: Close, BOT: Press PTT to send UP CODE, EOT: Release PTT to send DOWN CODE, BOTH: Press or release PTT to send.）"
+            }
+          >
+            <TbHexagonLetterR size={COLUMN_ICON_SIZE} />
+          </Tooltip>
+        ),
       },
     }),
   ];
