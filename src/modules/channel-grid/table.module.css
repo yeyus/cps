@@ -12,7 +12,7 @@
 }
 
 .tableHeader {
-    top: 60px;
+    top: 0;
     position: sticky;
     background-color: var(--color-table-header);
     text-transform: uppercase;

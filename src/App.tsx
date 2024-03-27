@@ -37,6 +37,16 @@ function App() {
   const [radioDefinition, setRadioDefinition] = React.useState<RadioDefinition<RadioTransports>>();
   const handleRadioSelect = (selected: RadioDefinition<RadioTransports>) => setRadioDefinition(selected);
 
+  React.useEffect(() => {
+    document.body.classList.add(styles.body);
+    document.body.classList.add(theme === "light" ? "theme-light" : "theme-dark");
+
+    return () => {
+      document.body.classList.remove(styles.body);
+      document.body.classList.remove(theme === "light" ? "theme-light" : "theme-dark");
+    };
+  }, [theme]);
+
   return (
     <ConnectionProvider>
       <CodeplugProvider>
@@ -71,7 +81,11 @@ function App() {
               </div>
             </section>
           )}
-          {radioDefinition != null && <ChannelGridWrapper radioDefinition={radioDefinition} />}
+          {radioDefinition != null && (
+            <section className={styles.tableContainer}>
+              <ChannelGridWrapper radioDefinition={radioDefinition} />
+            </section>
+          )}
         </div>
       </CodeplugProvider>
     </ConnectionProvider>
