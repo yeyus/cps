@@ -91,4 +91,7 @@ export const RaddiodityGD88Definition: RadioDefinition<RaddiodityGD88> = {
     flowControl: "none",
     stopBits: 1,
   },
+  getExtraColumns() {
+    return [];
+  },
 };

@@ -2,8 +2,9 @@ import { Timestamp } from "@bufbuild/protobuf";
 import { CodeplugReadResponse } from "@modules/radio-types/base";
 import { Channel, ChannelSlot, ChannelSlotType, Mode, Power, ToneSquelch } from "@/proto/gen/cps/model/v1/channel_pb";
 import { Codeplug, RadioIdentification, RadioType } from "@/proto/gen/cps/model/v1/codeplug_pb";
+import { UVK5ChannelCustomParams } from "@/proto/gen/cps/model/v1/custom/uvk5/uvk5_pb";
 import { MemorySerializer } from "../../../memory-serializer";
-import { MemoryMapChannel, QuanshengUVK5MemoryMap } from "./memory-map";
+import { MemoryMapChannel, MemoryMapChannelAttributes, QuanshengUVK5MemoryMap } from "./memory-map";
 
 const STEP_LOOKUP_TABLE = [
   BigInt(1000),
@@ -87,13 +88,18 @@ export default class QuanshengUVK5MemorySerializer implements MemorySerializer {
     // memory channels
     for (let i = 0; i < 200; i += 1) {
       const channel = memoryMap.channel[i];
+      const channelAttributes = memoryMap.channelAttributes[i];
 
       // determine if channel is empty
       if (memoryMap.channelAttributes[i].isFree) {
         channelSlots.push(new ChannelSlot({ type: ChannelSlotType.MEMORY, isEmpty: true }));
       } else {
         const channelSlot = new ChannelSlot({ type: ChannelSlotType.MEMORY, isEmpty: false });
-        channelSlot.channel = this.deserializeChannel(channel, parseName(memoryMap.channelname[i].name));
+        channelSlot.channel = this.deserializeChannel(
+          parseName(memoryMap.channelname[i].name),
+          channel,
+          channelAttributes,
+        );
         channelSlots.push(channelSlot);
       }
     }
@@ -104,14 +110,28 @@ export default class QuanshengUVK5MemorySerializer implements MemorySerializer {
       const bandName = BANDS_LOOKUP_TABLE[i];
       const channelSlot = new ChannelSlot({ type: ChannelSlotType.VFO, isEmpty: false });
 
-      channelSlot.channel = this.deserializeChannel(channel, bandName);
+      channelSlot.channel = this.deserializeChannel(bandName, channel, undefined);
 
       channelSlots.push(channelSlot);
     }
     return channelSlots;
   }
 
-  private deserializeChannel(channel: MemoryMapChannel, name: string): Channel {
+  private deserializeChannel(
+    name: string,
+    channel: MemoryMapChannel,
+    channelAttributes?: MemoryMapChannelAttributes,
+  ): Channel {
+    const customChannelParams = new UVK5ChannelCustomParams({
+      isScanlist1: channelAttributes?.isScanlist1,
+      isScanlist2: channelAttributes?.isScanlist2,
+      bclo: channel.bclo,
+      frequencyReverse: channel.freqReverse,
+      scrambler: channel.scrambler,
+      isDtmf: channel.dtmfDecode,
+      dtmfPttId: channel.dtmfPttid,
+    });
+
     return new Channel({
       name,
       frequency: BigInt(channel.freq * 10),
@@ -124,6 +144,7 @@ export default class QuanshengUVK5MemorySerializer implements MemorySerializer {
       mode: channel.enableAm ? Mode.AM : channel.bandwidth ? Mode.NFM : Mode.WFM,
       power: POWER_LOOKUP_TABLE[channel.txpower],
       createdAt: Timestamp.now(),
+      uvk5CustomChannelParams: customChannelParams,
     });
   }
 

@@ -10,6 +10,7 @@ import getLogger from "@utils/logger";
 import image from "./photo.png";
 import QuanshengUVK5MemorySerializer from "./memory-serializer";
 import { RadioDefinition } from "../../../radio-config";
+import getExtraColumns from "./columns";
 
 const logger = getLogger("QuanshengUVK5");
 
@@ -229,4 +230,5 @@ export const QuanshengUVK5Definition: RadioDefinition<QuanshengUVK5> = {
     flowControl: "none",
     stopBits: 1,
   },
+  getExtraColumns,
 };

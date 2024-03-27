@@ -5,6 +5,7 @@
 
 import type { BinaryReadOptions, FieldList, JsonReadOptions, JsonValue, PartialMessage, PlainMessage } from "@bufbuild/protobuf";
 import { Message, proto3, protoInt64, Timestamp } from "@bufbuild/protobuf";
+import { UVK5ChannelCustomParams } from "./custom/uvk5/uvk5_pb.ts";
 
 /**
  * @generated from enum cps.model.v1.Mode
@@ -307,6 +308,13 @@ export class Channel extends Message<Channel> {
   power?: Power;
 
   /**
+   * Custom radio section 
+   *
+   * @generated from field: optional cps.model.v1.custom.uvk5.UVK5ChannelCustomParams uvk5_custom_channel_params = 1000;
+   */
+  uvk5CustomChannelParams?: UVK5ChannelCustomParams;
+
+  /**
    * metadata section 
    *
    * @generated from field: optional string comment = 100;
@@ -347,6 +355,7 @@ export class Channel extends Message<Channel> {
     { no: 20, name: "mode", kind: "enum", T: proto3.getEnumType(Mode), opt: true },
     { no: 40, name: "name", kind: "scalar", T: 9 /* ScalarType.STRING */, opt: true },
     { no: 60, name: "power", kind: "message", T: Power, opt: true },
+    { no: 1000, name: "uvk5_custom_channel_params", kind: "message", T: UVK5ChannelCustomParams, opt: true },
     { no: 100, name: "comment", kind: "scalar", T: 9 /* ScalarType.STRING */, opt: true },
     { no: 103, name: "parent_entity", kind: "scalar", T: 9 /* ScalarType.STRING */, opt: true },
     { no: 101, name: "created_at", kind: "message", T: Timestamp, opt: true },
