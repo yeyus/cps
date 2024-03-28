@@ -1,0 +1,21 @@
+.header {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.itemsContainer {
+    height: 100%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.itemsLeft {
+    justify-content: flex-start;
+}
+
+.itemsRight {
+    justify-content: flex-end;
+}

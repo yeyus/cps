@@ -4,6 +4,7 @@ import { Popover } from "@headlessui/react";
 import { useFloating } from "@floating-ui/react";
 import { FaDev } from "react-icons/fa";
 
+import headerButtonStyles from "@modules/ui/header-button.module.css";
 import styles from "./app-version.module.css";
 
 export type AppEnvironment = "development" | "staging" | "production";
@@ -36,7 +37,7 @@ export default function AppVersion({ className }: { className?: string }) {
       <Popover.Button
         ref={refs.setReference}
         aria-label="Development menu"
-        className={classNames(className, styles.button)}
+        className={classNames(className, headerButtonStyles.button)}
       >
         <FaDev size={26} />
       </Popover.Button>

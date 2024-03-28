@@ -13,10 +13,6 @@
 
 .header {
   position: fixed;
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: flex-end;
   top: 0;
   height: 60px;
   width: 100%;
@@ -25,11 +21,14 @@
   z-index: var(--zindex-main-layout);
 }
 
-.tableContainer {
-  background-color: var(--color-background);
+.content {
   position: absolute;
   top: 60px;
   height: calc(100vh - 60px);
   width: 100%;
+}
+
+.tableContainer {
+  background-color: var(--color-background);
   overflow-y: auto;
 }
