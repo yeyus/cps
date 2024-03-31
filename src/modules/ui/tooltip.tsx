@@ -1,4 +1,4 @@
-import { useFloating, useHover, useInteractions } from "@floating-ui/react";
+import { Placement, useFloating, useHover, useInteractions } from "@floating-ui/react";
 import { Popover } from "@headlessui/react";
 import classNames from "classnames";
 import * as React from "react";
@@ -7,14 +7,23 @@ import styles from "./tooltip.module.css";
 
 interface TooltipProps {
   className?: string;
-  tooltipRenderer: () => React.ReactNode;
+  tooltipRenderer?: () => React.ReactNode;
+  tooltipPlacement?: Placement;
+  tooltipClassName?: string;
   children: React.ReactNode;
 }
 
-export default function Tooltip({ className, tooltipRenderer, children, ...props }: TooltipProps) {
+export default function Tooltip({
+  className,
+  tooltipRenderer,
+  tooltipPlacement = "bottom-end",
+  tooltipClassName,
+  children,
+  ...props
+}: TooltipProps) {
   const [isOpen, setIsOpen] = React.useState(false);
   const { refs, floatingStyles, context } = useFloating({
-    placement: "bottom-end",
+    placement: tooltipPlacement,
     open: isOpen,
     onOpenChange: setIsOpen,
   });
@@ -33,15 +42,15 @@ export default function Tooltip({ className, tooltipRenderer, children, ...props
         {children}
       </Popover.Button>
 
-      {isOpen && (
+      {isOpen && tooltipRenderer && (
         <Popover.Panel
           static
           ref={refs.setFloating}
           style={floatingStyles}
           {...getFloatingProps()}
-          className={styles.tooltip}
+          className={classNames(tooltipClassName, styles.tooltip)}
         >
-          {tooltipRenderer()}
+          {tooltipRenderer && tooltipRenderer()}
         </Popover.Panel>
       )}
     </Popover>

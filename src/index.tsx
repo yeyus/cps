@@ -6,12 +6,15 @@ import { ThemeProvider } from "@stores/theme";
 
 import "./index.css";
 import reportWebVitals from "./reportWebVitals";
+import { RadioProvider } from "./stores/radio";
 
 const root = ReactDOM.createRoot(document.getElementById("root") as HTMLElement);
 root.render(
   <React.StrictMode>
     <ThemeProvider>
-      <App />
+      <RadioProvider>
+        <App />
+      </RadioProvider>
     </ThemeProvider>
   </React.StrictMode>,
 );

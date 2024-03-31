@@ -1,5 +1,6 @@
 import * as React from "react";
 import classnames from "classnames";
+import { selectRadioAction, useRadio } from "@/stores/radio";
 import Radios from "../../configs/radios";
 import { RadioDefinition } from "../../configs/radio-config";
 
@@ -35,20 +36,19 @@ function RadioItem({ definition, isSelected, onSelect }: RadioItemProps) {
   );
 }
 
-interface RadioPickerProps {
-  selected?: RadioDefinition<RadioTransports>;
-  onSelect?: (selected: RadioDefinition<RadioTransports>) => void;
-}
+export default function RadioPicker() {
+  const { radio, dispatch } = useRadio();
 
-export default function RadioPicker({ selected, onSelect = () => {} }: RadioPickerProps) {
   return (
     <div className={styles.radioPickerList}>
       {Radios.map((definition) => (
         <RadioItem
           key={definition.identifiers[0].join("-")}
           definition={definition}
-          isSelected={definition === selected}
-          onSelect={onSelect}
+          isSelected={definition === radio}
+          onSelect={(selectedRadio) => {
+            selectRadioAction(dispatch, selectedRadio);
+          }}
         />
       ))}
     </div>

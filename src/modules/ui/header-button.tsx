@@ -1,13 +1,32 @@
 import * as React from "react";
 import type { HTMLAttributes } from "react";
-import classNames from "classnames";
+import { Placement } from "@floating-ui/react";
+import classnames from "classnames";
 
 import styles from "./header-button.module.css";
+import Tooltip from "./tooltip";
 
-export default function HeaderButton({ className, children, ...props }: HTMLAttributes<HTMLButtonElement>) {
+interface HeaderButtonProps {
+  tooltipText?: string;
+  tooltipPlacement?: Placement;
+}
+
+export default function HeaderButton({
+  tooltipText,
+  tooltipPlacement,
+  className,
+  children,
+  ...props
+}: HeaderButtonProps & HTMLAttributes<HTMLButtonElement>) {
   return (
-    <button type="button" className={classNames(className, styles.button)} {...props}>
+    <Tooltip
+      tooltipRenderer={tooltipText ? () => tooltipText : undefined}
+      tooltipPlacement={tooltipPlacement}
+      tooltipClassName={styles.tooltip}
+      className={classnames(className, styles.button)}
+      {...props}
+    >
       {children}
-    </button>
+    </Tooltip>
   );
 }

@@ -42,5 +42,3 @@ export interface SerialConnectionInterface extends BaseConnection {
 }
 
 export type Connection = SerialConnectionInterface | HIDConnectionInterface | USBConnectionInterface;
-
-export { Transport };

@@ -1,6 +1,9 @@
-import { SerialRadio } from "@modules/radio-types/transports/serial/serial";
 import getLogger from "@utils/logger";
-import { ConnectionAction, ConnectionState, ConnectionStatus, Transport } from "./types";
+
+import { SerialRadio } from "@modules/radio-types/transports/serial/serial";
+import { Transport } from "@modules/radio-types/base";
+
+import { ConnectionAction, ConnectionState, ConnectionStatus } from "./types";
 
 const logger = getLogger("ConnectSerialRadioAction");
 

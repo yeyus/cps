@@ -6,6 +6,7 @@
     "@bufbuild/buf": "^1.29.0",
     "@bufbuild/protobuf": "^1.7.2",
     "@bufbuild/protoc-gen-es": "^1.7.2",
+    "@ebay/nice-modal-react": "^1.2.13",
     "@floating-ui/react": "^0.26.9",
     "@headlessui/react": "^1.7.18",
     "@tanstack/react-table": "^8.13.2",
