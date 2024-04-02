@@ -29,6 +29,8 @@ export default function useSerial() {
 
   React.useEffect(() => {
     try {
+      if (!supported) return;
+
       listPorts().then((ps: SerialPort[]) => {
         setPorts(ps);
       });

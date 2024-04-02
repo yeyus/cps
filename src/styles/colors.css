@@ -87,6 +87,9 @@
     --color-text-selected: var(--color-asparagus-ramp-500);
 
     --color-popover-background: var(--color-base-ramp-c00);
+
+    --color-button-primary-bg: var(--color-asparagus-ramp-800);
+    --color-button-secondary-bg: var(--color-asparagus-ramp-d00);
 }
 
 .theme-dark {
@@ -107,4 +110,7 @@
     --color-text-selected: var(--color-asparagus-ramp-800);
 
     --color-popover-background: var(--color-base-ramp-500);
+
+    --color-button-primary-bg: var(--color-asparagus-ramp-600);
+    --color-button-secondary-bg: var(--color-asparagus-ramp-200);
 }

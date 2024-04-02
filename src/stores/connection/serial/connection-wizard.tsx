@@ -71,11 +71,14 @@ export default function ConnectionWizard({ radioDefinition }: ConnectionWizardPr
     </p>
   );
 
+  if (!supported) {
+    return <p>This browser doesn&apos;t support WebSerial API</p>;
+  }
+
   return (
     <>
-      {!supported && <p>This browser doesn&apos;t support WebSerial API</p>}
       {(error || state.error) && renderError()}
-      {supported && !error && renderPortList()}
+      {!error && renderPortList()}
       <button type="button" onClick={triggerPortRequest}>
         Request Ports
       </button>
